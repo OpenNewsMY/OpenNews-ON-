@@ -1,5 +1,4 @@
 
-/* Mobile-first base styles */
 body {
   font-family: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", "Helvetica Neue", sans-serif;
   background-image: url('https://www.transparenttextures.com/patterns/paper-fibers.png');
@@ -11,15 +10,14 @@ body {
   -webkit-font-smoothing: antialiased;
   box-sizing: border-box;
   overflow-x: hidden;
-  font-size: 16px;
-  line-height: 1.6;
-  padding: 0 1rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
 }
 
 header {
   background-color: rgba(46, 65, 86, 0.9);
   color: white;
-  padding: 1.5rem 1rem;
+  padding: 2rem 1rem;
   text-align: center;
   border-radius: 0 0 20px 20px;
 }
@@ -32,7 +30,7 @@ header h1 {
 
 header p {
   font-size: 1rem;
-  margin-top: 0.3rem;
+  margin-top: 0.5rem;
   opacity: 0.9;
 }
 
@@ -40,9 +38,8 @@ header p {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 1rem;
-  background-color: white;
-  color: rgb(46, 65, 86);
+  padding: 1rem 0;
+  background: transparent;
 }
 
 #menu-toggle {
@@ -56,7 +53,7 @@ header p {
   font-weight: bold;
   width: 100%;
   max-width: 300px;
-  margin: 0 auto;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 #nav-menu {
@@ -83,9 +80,7 @@ header p {
 }
 
 #search input,
-#search button,
-#nav-menu #search input,
-#nav-menu #search button {
+#search button {
   width: 100%;
   padding: 0.6rem;
   margin: 0.3rem 0;
@@ -104,7 +99,7 @@ header p {
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
   margin: 1rem auto;
-  padding: 1rem;
+  padding: 1.5rem;
   max-width: 800px;
   border-radius: 12px;
   box-shadow: 0 4px 8px rgba(0,0,0,0.15);
@@ -193,7 +188,6 @@ footer {
   }
 }
 
-/* Section title coloring */
 #about h2,
 #vision h2,
 #contact h2,
