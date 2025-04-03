@@ -1,0 +1,36 @@
+
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ON新闻网 | OpenNews</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>ON新闻网 | OpenNews</h1>
+    <p>真实、有趣、不收费的新闻站</p>
+  </header>
+
+  <nav>
+    <a href="#" onclick="filterArticles('全部')">全部</a>
+    <a href="#" onclick="filterArticles('政治')">政治</a>
+    <a href="#" onclick="filterArticles('八卦')">八卦</a>
+    <a href="#" onclick="filterArticles('国际')">国际</a>
+  </nav>
+
+  <main>
+    <section id="news-section">
+      <h2>新闻列表</h2>
+      <div id="news-list"></div>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 ON新闻网 OpenNews. All rights reserved.</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
