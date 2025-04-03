@@ -2,7 +2,7 @@
 <html lang="zh-Hans">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ON新闻网 | OpenNews</title>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
@@ -18,31 +18,23 @@
     <button id="menu-toggle" onclick="toggleMenu()">☰ 菜单</button>
   </div>
 
-  <!-- 可折叠导航栏 -->
-<nav id="nav-menu">
-  <a href="#" onclick="filterArticles('全部')">全部</a>
-  <a href="#" onclick="filterArticles('政治')">政治</a>
-  <a href="#" onclick="filterArticles('八卦')">八卦</a>
-  <a href="#" onclick="filterArticles('国际')">国际</a>
-  <a href="#" onclick="filterArticles('冷知识')">冷知识</a>
-  <a href="#about">关于我们</a>
-  <a href="#vision">我们的理念</a>
-  <a href="#contact">联络方式</a>
-  <a href="#feedback">意见反馈</a>
-
-  <!-- ✅ 搜索栏移到菜单里 -->
-  <div id="search" style="margin-top: 1rem;">
+  <nav id="nav-menu">
+    <a href="#" onclick="filterArticles('全部')">全部</a>
+    <a href="#" onclick="filterArticles('政治')">政治</a>
+    <a href="#" onclick="filterArticles('八卦')">八卦</a>
+    <a href="#" onclick="filterArticles('国际')">国际</a>
+    <a href="#" onclick="filterArticles('冷知识')">冷知识</a>
+    <a href="#about">关于我们</a>
+    <a href="#vision">我们的理念</a>
+    <a href="contact.html">联络方式</a>
+    <a href="feedback.html">意见反馈</a>
+  <section id="search">
     <input type="text" id="searchInput" placeholder="输入关键词搜索...">
     <button onclick="searchArticles()">搜索</button>
-  </div>
+  </section>
 </nav>
 
   <main>
-    <section id="news-section">
-      <h2>新闻列表</h2>
-      <div id="news-list"></div>
-    </section>
-
     <section id="about">
       <h2>关于我们</h2>
       <p>ON新闻网是“OpenNews”的缩写。之所以叫“OpenNews"是因为我们希望新闻都是公开免费阅读的，让大马人民在毫无负担的情况下得知天下事。
@@ -55,22 +47,9 @@
       <p>我们相信资讯应该回归公众、回归真实。OpenNews新闻网致力于传播事实，同时保有趣味性与年轻活力，让此新闻网更贴近生活。</p>
     </section>
 
-    <section id="contact">
-      <h2>联络方式</h2>
-      <p>电邮：opennews.my@gmail.com<br>Instagram / Facebook: @opennewsmy</p>
-    </section>
-
-    <section id="feedback">
-      <h2>意见反馈</h2>
-      <form>
-        <label for="name">姓名：</label><br>
-        <input type="text" id="name" name="name"><br>
-        <label for="email">电邮：</label><br>
-        <input type="email" id="email" name="email"><br>
-        <label for="message">留言内容：</label><br>
-        <textarea id="message" name="message" rows="4" cols="50"></textarea><br>
-        <button type="submit">提交反馈</button>
-      </form>
+ <section id="news-section">
+      <h2>新闻列表</h2>
+      <div id="news-list"></div>
     </section>
   </main>
 
@@ -87,3 +66,4 @@
   <script src="script.js"></script>
 </body>
 </html>
+
