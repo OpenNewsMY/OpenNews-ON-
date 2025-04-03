@@ -1,8 +1,10 @@
 
 body {
-  font-family: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", "Helvetica Neue", sans-serif;
-  background-color: rgb(218, 158, 62);
-  color: white;
+  background: rgb(242, 236, 222) url('https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Paper_texture.svg/1280px-Paper_texture.svg.png');
+  background-size: cover;
+  background-repeat: repeat;
+  color: rgb(46, 65, 86);
+  font-family: 'EB Garamond', 'Noto Serif SC', 'Georgia', serif;
   margin: 0;
   padding: 0;
   -webkit-font-smoothing: antialiased;
@@ -13,22 +15,23 @@ body {
 }
 
 header {
-  background-color: rgb(46, 65, 86);
+  background-color: rgba(255, 255, 255, 0.6);
   padding: 2rem;
   text-align: center;
   border-radius: 0 0 20px 20px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 header h1 {
   margin: 0;
-  font-size: 1.5rem;
-  white-space: nowrap;
+  font-size: 2rem;
+  font-weight: bold;
 }
 
 header p {
   font-size: 1rem;
   margin-top: 0.5rem;
-  opacity: 0.9;
+  opacity: 0.85;
 }
 
 #menu-container {
@@ -36,7 +39,7 @@ header p {
   justify-content: center;
   align-items: center;
   padding: 1rem;
-  background-color: white;
+  background-color: rgba(255, 255, 255, 0.6);
   color: rgb(46, 65, 86);
 }
 
@@ -55,16 +58,16 @@ header p {
 nav {
   text-align: center;
   padding: 0.5rem;
-  background-color: rgb(46, 65, 86);
+  background-color: rgba(255, 255, 255, 0.6);
   border-radius: 12px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
 }
 
 nav a {
-  color: white;
+  color: rgb(46, 65, 86);
   text-decoration: none;
   margin: 0 10px;
-  font-weight: bold;
+  font-weight: 600;
 }
 
 nav a:hover {
@@ -72,19 +75,21 @@ nav a:hover {
 }
 
 .article {
-  background-color: rgba(255,255,255,0.1);
+  background-color: rgba(255,255,255,0.85);
   margin: 1rem auto;
   padding: 1.5rem;
   max-width: 800px;
   border-radius: 12px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-  line-height: 1.6;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  line-height: 1.8;
   word-break: break-word;
+  font-size: 1rem;
 }
 
 .article h3 {
-  color: white;
+  color: rgb(46, 65, 86);
   margin-bottom: 0.5rem;
+  font-weight: bold;
 }
 
 .article img {
@@ -97,12 +102,13 @@ nav a:hover {
 
 .article p em {
   display: inline-block;
-  background-color: rgb(46, 65, 86);
+  background-color: rgb(218, 158, 62);
   padding: 0.3rem 0.6rem;
   border-radius: 12px;
   font-size: 0.8rem;
   font-style: normal;
   margin-top: 0.5rem;
+  color: white;
 }
 
 #search {
@@ -112,9 +118,7 @@ nav a:hover {
 }
 
 #search input,
-#search button,
-#nav-menu #search input,
-#nav-menu #search button {
+#search button {
   padding: 0.5rem;
   border-radius: 8px;
   border: none;
@@ -134,15 +138,16 @@ nav a:hover {
 }
 
 footer {
-  background-color: rgb(46, 65, 86);
+  background-color: rgba(255, 255, 255, 0.6);
   text-align: center;
   padding: 1.5rem;
   font-size: 0.9rem;
   margin-top: 3rem;
   border-radius: 20px 20px 0 0;
+  color: rgb(46, 65, 86);
 }
 
-/* 意见反馈表单样式优化 */
+/* 表单 */
 #feedback input,
 #feedback textarea,
 #feedback button {
@@ -154,14 +159,8 @@ footer {
   box-sizing: border-box;
 }
 
-/* 手机版优化 */
+/* 移动版 */
 @media (max-width: 768px) {
-  body {
-    font-size: 16px;
-    line-height: 1.6;
-    padding: 1rem;
-  }
-
   nav {
     display: none;
   }
@@ -173,7 +172,7 @@ footer {
   #nav-menu {
     display: none;
     text-align: center;
-    background-color: rgb(46, 65, 86);
+    background-color: rgba(255,255,255,0.7);
     padding: 1rem;
     border-radius: 12px;
   }
@@ -205,7 +204,7 @@ footer {
   }
 }
 
-/* 桌面版搜索栏优化 */
+/* 桌面版 */
 @media (min-width: 769px) {
   #search {
     display: flex;
@@ -238,10 +237,12 @@ footer {
   }
 }
 
-/* 关于我们 / 理念 / 联络方式 / 意见反馈区块标题颜色 */
+/* 区块标题 */
 #about h2,
 #vision h2,
 #contact h2,
 #feedback h2 {
   color: rgb(46, 65, 86);
+  font-weight: bold;
+  font-size: 1.4rem;
 }
