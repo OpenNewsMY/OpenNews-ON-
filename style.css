@@ -205,6 +205,39 @@ footer {
   }
 }
 
+/* 桌面版搜索栏优化 */
+@media (min-width: 769px) {
+  #search {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+  }
+
+  #search input {
+    width: 300px;
+    margin: 0;
+  }
+
+  #search button {
+    width: auto;
+    margin: 0;
+  }
+
+  nav {
+    display: block;
+  }
+
+  #menu-toggle {
+    display: none;
+  }
+
+  #nav-menu {
+    display: block;
+  }
+}
+
 /* 关于我们 / 理念 / 联络方式 / 意见反馈区块标题颜色 */
 #about h2,
 #vision h2,
