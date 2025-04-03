@@ -203,3 +203,27 @@ body {
   text-align: center;
 }
 
+header h1 {
+  font-size: 1.5rem; /* 比原本略小一点 */
+  white-space: nowrap; /* 不换行 */
+}
+
+#menu-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+  background-color: white;
+  color: rgb(46, 65, 86);
+}
+
+#menu-toggle {
+  font-size: 1.1rem;
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 8px;
+  background-color: rgb(46, 65, 86);
+  color: white;
+}
+
+
