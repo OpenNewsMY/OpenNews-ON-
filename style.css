@@ -1,5 +1,15 @@
+
 body {
   font-family: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", "Helvetica Neue", sans-serif;
+  background-color: rgb(218, 158, 62);
+  color: white;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  box-sizing: border-box;
+  overflow-x: hidden;
 }
 
 header {
@@ -10,7 +20,8 @@ header {
 
 header h1 {
   margin: 0;
-  font-size: 2rem;
+  font-size: 1.5rem;
+  white-space: nowrap;
 }
 
 header p {
@@ -19,15 +30,25 @@ header p {
   opacity: 0.9;
 }
 
-#menu-toggle {
-  display: none;
+#menu-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
   background-color: white;
   color: rgb(46, 65, 86);
+}
+
+#menu-toggle {
+  display: none;
+  font-size: 1.1rem;
+  padding: 0.6rem 1.2rem;
   border: none;
-  font-size: 1.2rem;
-  padding: 0.5rem 1rem;
-  margin: 1rem;
-  border-radius: 6px;
+  border-radius: 8px;
+  background-color: rgb(46, 65, 86);
+  color: white;
+  width: 100%;
+  font-weight: bold;
 }
 
 nav {
@@ -50,10 +71,12 @@ nav a:hover {
 .article {
   background-color: rgba(255,255,255,0.1);
   margin: 1rem auto;
-  padding: 1rem;
+  padding: 1.5rem;
   max-width: 800px;
-  border-radius: 10px;
+  border-radius: 12px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  line-height: 1.6;
+  word-break: break-word;
 }
 
 .article h3 {
@@ -63,8 +86,10 @@ nav a:hover {
 
 .article img {
   width: 100%;
-  margin-top: 0.5rem;
-  border-radius: 6px;
+  height: auto;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 8px;
 }
 
 .article p em {
@@ -80,6 +105,7 @@ nav a:hover {
 #search {
   text-align: center;
   margin: 1rem;
+  padding: 1rem;
 }
 
 #search input {
@@ -88,6 +114,8 @@ nav a:hover {
   max-width: 300px;
   border-radius: 5px;
   border: none;
+  box-sizing: border-box;
+  margin: 0.3rem 0;
 }
 
 #search button {
@@ -97,6 +125,7 @@ nav a:hover {
   color: white;
   border: none;
   border-radius: 5px;
+  margin: 0.3rem 0;
 }
 
 footer {
@@ -107,6 +136,7 @@ footer {
   margin-top: 3rem;
 }
 
+/* 手机版优化 */
 @media (max-width: 768px) {
   body {
     font-size: 16px;
@@ -120,13 +150,6 @@ footer {
 
   #menu-toggle {
     display: block;
-    width: 100%;
-    font-size: 1.2rem;
-    background-color: white;
-    color: rgb(46, 65, 86);
-    padding: 1rem;
-    border: none;
-    font-weight: bold;
   }
 
   #nav-menu {
@@ -161,65 +184,6 @@ footer {
     border-radius: 8px;
     margin: 1rem 0;
   }
-
-body {
-  -webkit-font-smoothing: antialiased;
-  padding-left: 1rem;
-  padding-right: 1rem;
-  box-sizing: border-box;
-  overflow-x: hidden;
-}
-
-.article {
-  margin: 1rem auto;
-  padding: 1.5rem;
-  border-radius: 12px;
-  max-width: 800px;
-  background-color: rgba(255,255,255,0.08);
-  line-height: 1.6;
-  word-break: break-word;
-}
-
-.article img {
-  max-width: 100%;
-  height: auto;
-  border-radius: 8px;
-  margin-top: 1rem;
-  margin-bottom: 1rem;
-}
-
-#search input, #search button {
-  width: 100%;
-  box-sizing: border-box;
-  margin: 0.3rem 0;
-}
-
-#search {
-  padding: 1rem;
-  text-align: center;
-}
-
-header h1 {
-  font-size: 1.5rem; /* 比原本略小一点 */
-  white-space: nowrap; /* 不换行 */
-}
-
-#menu-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 1rem;
-  background-color: white;
-  color: rgb(46, 65, 86);
-}
-
-#menu-toggle {
-  font-size: 1.1rem;
-  padding: 0.6rem 1.2rem;
-  border: none;
-  border-radius: 8px;
-  background-color: rgb(46, 65, 86);
-  color: white;
 }
 
 /* 关于我们 / 理念 / 联络方式 / 意见反馈区块标题颜色 */
