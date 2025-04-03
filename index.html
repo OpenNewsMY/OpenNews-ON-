@@ -19,23 +19,23 @@
   </div>
 
   <!-- 可折叠导航栏 -->
-  <nav id="nav-menu">
-    <a href="#" onclick="filterArticles('全部')">全部</a>
-    <a href="#" onclick="filterArticles('政治')">政治</a>
-    <a href="#" onclick="filterArticles('八卦')">八卦</a>
-    <a href="#" onclick="filterArticles('国际')">国际</a>
-    <a href="#" onclick="filterArticles('冷知识')">冷知识</a>
-    <a href="#about">关于我们</a>
-    <a href="#vision">我们的理念</a>
-    <a href="#contact">联络方式</a>
-    <a href="#feedback">意见反馈</a>
-  </nav>
+<nav id="nav-menu">
+  <a href="#" onclick="filterArticles('全部')">全部</a>
+  <a href="#" onclick="filterArticles('政治')">政治</a>
+  <a href="#" onclick="filterArticles('八卦')">八卦</a>
+  <a href="#" onclick="filterArticles('国际')">国际</a>
+  <a href="#" onclick="filterArticles('冷知识')">冷知识</a>
+  <a href="#about">关于我们</a>
+  <a href="#vision">我们的理念</a>
+  <a href="#contact">联络方式</a>
+  <a href="#feedback">意见反馈</a>
 
-  <!-- 搜索栏 -->
-  <section id="search">
+  <!-- ✅ 搜索栏移到菜单里 -->
+  <div id="search" style="margin-top: 1rem;">
     <input type="text" id="searchInput" placeholder="输入关键词搜索...">
     <button onclick="searchArticles()">搜索</button>
-  </section>
+  </div>
+</nav>
 
   <main>
     <section id="news-section">
