@@ -14,17 +14,21 @@
 
   </header>
 
-  <nav>
-    <a href="#" onclick="filterArticles('全部')">全部</a>
-    <a href="#" onclick="filterArticles('政治')">政治</a>
-    <a href="#" onclick="filterArticles('八卦')">八卦</a>
-    <a href="#" onclick="filterArticles('国际')">国际</a>
-    <a href="#" onclick="filterArticles('冷知识')">冷知识</a>
-    <a href="#about">关于我们</a>
-    <a href="#vision">我们的理念</a>
-    <a href="#contact">联络方式</a>
-    <a href="#feedback">意见反馈</a>
-  </nav>
+ <!-- 菜单按钮（小屏幕才显示） -->
+<button id="menu-toggle" onclick="toggleMenu()">☰ 菜单</button>
+
+<!-- 可折叠导航栏 -->
+<nav id="nav-menu">
+  <a href="#" onclick="filterArticles('全部')">全部</a>
+  <a href="#" onclick="filterArticles('政治')">政治</a>
+  <a href="#" onclick="filterArticles('八卦')">八卦</a>
+  <a href="#" onclick="filterArticles('国际')">国际</a>
+  <a href="#" onclick="filterArticles('冷知识')">冷知识</a>
+  <a href="#about">关于我们</a>
+  <a href="#vision">我们的理念</a>
+  <a href="#contact">联络方式</a>
+  <a href="#feedback">意见反馈</a>
+</nav>
 
 <section id="about">
   <h2>关于我们</h2>
@@ -72,6 +76,12 @@
     <p>&copy; 2025 OpenNews ON新闻网. All rights reserved.</p>
   </footer>
 
+<script>
+  function toggleMenu() {
+    const nav = document.getElementById("nav-menu");
+    nav.style.display = nav.style.display === "block" ? "none" : "block";
+  }
+</script>
   <script src="script.js"></script>
 </body>
 </html>
