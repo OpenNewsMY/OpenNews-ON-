@@ -81,8 +81,10 @@
     <option>废闻</option>
   </select>
 
-  <label for="image">图片链接</label>
-  <input type="text" id="image" placeholder="https://...">
+  <label for="imageUpload">上传图片</label>
+  <input type="file" id="imageUpload" accept="image/*">
+  <p style="font-size: 0.9rem; color: #777;">将图片自动上传至 GitHub images 文件夹</p>
+  <div id="uploadStatus"></div>
 
   <label for="summary">摘要</label>
   <textarea id="summary" rows="3"></textarea>
@@ -104,12 +106,37 @@
 
   <script>
     let articleId = 100;
+    let uploadedImagePath = "";
+
+    document.getElementById('imageUpload').addEventListener('change', async function(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = async function(event) {
+        const base64 = event.target.result.split(',')[1];
+        const res = await fetch("https://opennews-uploader.opennews-my.workers.dev/", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ filename: file.name, content: base64 })
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          uploadedImagePath = data.url;
+          document.getElementById("uploadStatus").innerHTML = `✅ 上传成功：<code>${uploadedImagePath}</code>`;
+        } else {
+          const err = await res.text();
+          document.getElementById("uploadStatus").innerHTML = `❌ 上传失败：${err}`;
+        }
+      };
+      reader.readAsDataURL(file);
+    });
 
     function generateJSON() {
       const title = document.getElementById('title').value;
       const date = document.getElementById('date').value;
       const category = document.getElementById('category').value;
-      const image = document.getElementById('image').value;
       const summary = document.getElementById('summary').value;
       const content = document.getElementById('content').value;
 
@@ -118,7 +145,7 @@
         title,
         date,
         category,
-        image,
+        image: uploadedImagePath,
         summary,
         content
       };
@@ -130,14 +157,14 @@
       const title = document.getElementById('title').value;
       const date = document.getElementById('date').value;
       const category = document.getElementById('category').value;
-      const image = document.getElementById('image').value;
       const summary = document.getElementById('summary').value;
       const content = document.getElementById('content').value;
+      const img = uploadedImagePath ? `<img src="${uploadedImagePath}" style="max-width:100%;"><br><br>` : "";
 
       const html = `
         <h3>${title}</h3>
         <p><strong>${date}</strong> | 分类：${category}</p>
-        <img src="${image}" style="max-width:100%;"><br><br>
+        ${img}
         <p><strong>摘要：</strong>${summary}</p>
         <p>${content}</p>
       `;
