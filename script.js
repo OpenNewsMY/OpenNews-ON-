@@ -1,54 +1,59 @@
+// script.js
 
-let allArticles = [];
+let articlesData = [];
 
-function renderArticles(articles, category = '全部') {
-  const container = document.getElementById('news-list');
-  container.innerHTML = '';
-  const filtered = category === '全部' ? articles : articles.filter(a => a.category === category);
-  if (filtered.length === 0) {
-    container.innerHTML = '<p>没有找到符合条件的新闻。</p>';
-    return;
-  }
-  filtered.forEach(article => {
-    const div = document.createElement('div');
-    div.className = 'article';
-    div.innerHTML = `
+// 加载 JSON 新闻
+fetch("articles.json")
+  .then((res) => res.json())
+  .then((data) => {
+    articlesData = data;
+    renderArticles(articlesData);
+  });
+
+function renderArticles(articles) {
+  const list = document.getElementById("news-list");
+  list.innerHTML = "";
+
+  articles.forEach((article) => {
+    const card = document.createElement("div");
+    card.className = "article";
+
+    const link = document.createElement("a");
+    link.href = `article.html?id=${article.id}`;
+    link.style.textDecoration = "none";
+    link.style.color = "inherit";
+
+    let imgHtml = article.image ? `<img src='${article.image}' style='width: 100%; border-radius: 8px; margin-bottom: 0.5rem;'>` : "";
+    let summaryText = article.summary || "（无摘要内容）";
+
+    card.innerHTML = `
       <h3>${article.title}</h3>
-      <p><strong>${article.date}</strong></p>
-      <img src="${article.image}" style="width:100%; max-width:800px;">
-      <p>${article.summary}</p>
-      <p><em>分类: ${article.category}</em></p>
+      <p>${article.date}</p>
+      ${imgHtml}
+      <p>${summaryText}</p>
+      <p><em>分类：${article.category}</em></p>
     `;
-    container.appendChild(div);
+
+    link.appendChild(card);
+    list.appendChild(link);
   });
 }
 
 function filterArticles(category) {
-  renderArticles(allArticles, category);
+  if (category === "全部") {
+    renderArticles(articlesData);
+  } else {
+    const filtered = articlesData.filter((a) => a.category === category);
+    renderArticles(filtered);
+  }
 }
 
 function searchArticles() {
-  const keyword = document.getElementById('searchInput').value.toLowerCase().trim();
-  if (!keyword) {
-    renderArticles(allArticles, '全部');
-    return;
-  }
-
-  const result = allArticles.filter(article =>
-    article.title.toLowerCase().includes(keyword) ||
-    article.summary.toLowerCase().includes(keyword) ||
-    article.content.toLowerCase().includes(keyword)
+  const keyword = document.getElementById("searchInput").value.toLowerCase();
+  const results = articlesData.filter((a) =>
+    a.title.toLowerCase().includes(keyword) ||
+    (a.summary && a.summary.toLowerCase().includes(keyword)) ||
+    (a.content && a.content.toLowerCase().includes(keyword))
   );
-
-  renderArticles(result, '全部');
+  renderArticles(results);
 }
-
-window.onload = () => {
-  fetch('articles.json')
-    .then(res => res.json())
-    .then(data => {
-      allArticles = data;
-      renderArticles(allArticles);
-    })
-    .catch(err => console.error('加载失败:', err));
-};
