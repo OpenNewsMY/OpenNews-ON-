@@ -1,76 +1,247 @@
-/* Improved Mobile Layout for ON新闻网 */
 
+body {
+  font-family: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", "Helvetica Neue", sans-serif;
+  background-image: url('https://www.transparenttextures.com/patterns/paper-fibers.png');
+  background-color: rgb(245, 240, 230);
+  background-repeat: repeat;
+  color: rgb(46, 65, 86);
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+header {
+  background-color: rgba(46, 65, 86, 0.9);
+  color: white;
+  padding: 2rem;
+  text-align: center;
+  border-radius: 0 0 20px 20px;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 1.5rem;
+  white-space: nowrap;
+}
+
+header p {
+  font-size: 1rem;
+  margin-top: 0.5rem;
+  opacity: 0.9;
+}
+
+#menu-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+  background-color: white;
+  color: rgb(46, 65, 86);
+}
+
+#menu-toggle {
+  display: none;
+  font-size: 1.1rem;
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 8px;
+  background-color: rgb(46, 65, 86);
+  color: white;
+  width: 100%;
+  font-weight: bold;
+}
+
+nav {
+  text-align: center;
+  padding: 0.5rem;
+  background-color: rgba(46, 65, 86, 0.9);
+  color: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+nav a {
+  color: white;
+  text-decoration: none;
+  margin: 0 10px;
+  font-weight: bold;
+}
+
+nav a:hover {
+  text-decoration: underline;
+}
+
+.article {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  margin: 1rem auto;
+  padding: 1.5rem;
+  max-width: 800px;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  line-height: 1.6;
+  word-break: break-word;
+  color: rgb(46, 65, 86);
+}
+
+.article h3 {
+  color: rgb(46, 65, 86);
+  margin-bottom: 0.5rem;
+}
+
+.article img {
+  width: 100%;
+  height: auto;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 8px;
+}
+
+.article p em {
+  display: inline-block;
+  background-color: rgb(46, 65, 86);
+  color: white;
+  padding: 0.3rem 0.6rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-style: normal;
+  margin-top: 0.5rem;
+}
+
+#search {
+  text-align: center;
+  margin: 1rem;
+  padding: 1rem;
+}
+
+#search input,
+#search button,
+#nav-menu #search input,
+#nav-menu #search button {
+  padding: 0.5rem;
+  border-radius: 8px;
+  border: none;
+  margin: 0.3rem 0;
+  box-sizing: border-box;
+}
+
+#search input {
+  width: 60%;
+  max-width: 300px;
+}
+
+#search button {
+  margin-left: 0.5rem;
+  background-color: rgb(46, 65, 86);
+  color: white;
+}
+
+footer {
+  background-color: rgba(46, 65, 86, 0.95);
+  text-align: center;
+  padding: 1.5rem;
+  font-size: 0.9rem;
+  margin-top: 3rem;
+  border-radius: 20px 20px 0 0;
+  color: white;
+}
+
+#feedback input,
+#feedback textarea,
+#feedback button {
+  width: 100%;
+  padding: 0.5rem;
+  margin: 0.5rem 0;
+  border-radius: 6px;
+  border: none;
+  box-sizing: border-box;
+}
+
+/* 手机版 */
 @media (max-width: 768px) {
-  body {
-    font-size: 16px;
-    line-height: 1.7;
-    padding: 0.5rem;
-  }
-
-  header {
-    padding: 1.5rem 1rem 1rem;
-  }
-
-  header h1 {
-    font-size: 1.6rem;
-    white-space: nowrap;
-    line-height: 1.2;
-  }
-
-  header p {
-    font-size: 0.95rem;
-  }
-
   nav {
     display: none;
   }
 
   #menu-toggle {
     display: block;
-    font-size: 1.1rem;
-    padding: 1rem;
-    margin: 0.5rem;
   }
 
   #nav-menu {
     display: none;
     text-align: center;
-    background-color: #2e4156;
+    background-color: rgba(46, 65, 86, 0.95);
     padding: 1rem;
     border-radius: 12px;
   }
 
   #nav-menu a {
     display: block;
-    margin: 0.75rem 0;
-    font-size: 1.1rem;
+    margin: 0.5rem 0;
+    font-size: 1rem;
   }
 
-  #search {
-    padding: 1rem 0;
+  #search input {
+    width: 100%;
+    margin-bottom: 0.5rem;
   }
 
-  #search input,
   #search button {
     width: 100%;
-    font-size: 1rem;
-    margin: 0.4rem 0;
+    margin-top: 0.2rem;
   }
 
   .article {
     padding: 1rem;
     margin: 1rem 0;
-    font-size: 1rem;
   }
 
   .article img {
     border-radius: 8px;
     margin: 1rem 0;
   }
+}
 
-  #feedback input,
-  #feedback textarea,
-  #feedback button {
-    font-size: 1rem;
+/* 桌面版搜索栏优化 */
+@media (min-width: 769px) {
+  #search {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
   }
+
+  #search input {
+    width: 300px;
+    margin: 0;
+  }
+
+  #search button {
+    width: auto;
+    margin: 0;
+  }
+
+  nav {
+    display: block;
+  }
+
+  #menu-toggle {
+    display: none;
+  }
+
+  #nav-menu {
+    display: block;
+  }
+}
+
+/* 颜色强调 */
+#about h2,
+#vision h2,
+#contact h2,
+#feedback h2 {
+  color: rgb(46, 65, 86);
 }
