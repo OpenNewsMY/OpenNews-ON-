@@ -222,4 +222,10 @@ header h1 {
   color: white;
 }
 
-
+/* 关于我们 / 理念 / 联络方式 / 意见反馈区块标题颜色 */
+#about h2,
+#vision h2,
+#contact h2,
+#feedback h2 {
+  color: rgb(46, 65, 86);
+}
