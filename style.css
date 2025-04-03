@@ -40,3 +40,51 @@ main {
     padding: 1rem;
   }
 }
+/* 手机优化 */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-size: 16px;
+  line-height: 1.6;
+  padding: 1rem;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* 汉堡菜单按钮（小屏幕才显示） */
+#menu-toggle {
+  display: none;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  font-size: 1.2rem;
+  padding: 0.5rem 1rem;
+  margin: 1rem 0;
+}
+
+/* 当画面小于768px时：显示汉堡菜单，隐藏原始横排导航 */
+@media (max-width: 768px) {
+  nav {
+    display: none;
+  }
+
+  #menu-toggle {
+    display: block;
+  }
+
+  #nav-menu a {
+    display: block;
+    margin: 0.5rem 0;
+  }
+
+  #nav-menu {
+    display: none;
+    background-color: #f9f9f9;
+    padding: 1rem;
+  }
+}
