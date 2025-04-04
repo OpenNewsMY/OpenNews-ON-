@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>管理文章 | OpenNews</title>
+  <style>
+    body { font-family: sans-serif; padding: 2rem; background: #f9f9f9; }
+    h1 { color: #333; }
+    .article-list { margin-top: 2rem; }
+    .article-card {
+      background: white;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    .article-card h3 { margin: 0 0 0.5rem; }
+    .article-card small { color: #666; }
+    .buttons { margin-top: 1rem; }
+    button {
+      margin-right: 0.5rem;
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .edit { background-color: #007bff; color: white; }
+    .delete { background-color: #dc3545; color: white; }
+  </style>
+</head>
+<body>
+  <h1>📝 管理文章</h1>
+  <div class="article-list" id="article-list">正在载入文章...</div>
+
+  <script>
+    async function loadArticles() {
+      const container = document.getElementById('article-list');
+      try {
+        const res = await fetch("https://opennewsmy.github.io/OpenNews-ON-/articles.json");
+        const articles = await res.json();
+        container.innerHTML = '';
+        articles.forEach(article => {
+          const div = document.createElement('div');
+          div.className = 'article-card';
+          div.innerHTML = `
+            <h3>${article.title}</h3>
+            <small>${article.date} ｜ 分类：${article.category}</small>
+            <div class="buttons">
+              <button class="edit" onclick="editArticle(${article.id})">编辑</button>
+              <button class="delete" onclick="deleteArticle(${article.id})">删除</button>
+            </div>
+          `;
+          container.appendChild(div);
+        });
+      } catch (err) {
+        container.innerHTML = '❌ 无法加载文章：' + err.message;
+      }
+    }
+
+    function editArticle(id) {
+      window.location.href = `admin.html?id=${id}`;
+    }
+
+    async function deleteArticle(id) {
+      if (!confirm(`确定要删除文章 ID ${id} 吗？此操作无法恢复。`)) return;
+      try {
+        const res = await fetch("https://opennews-publish.opennews-my.workers.dev/", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ deleteId: id })
+        });
+        if (res.ok) {
+          alert("✅ 删除成功！");
+          loadArticles();
+        } else {
+          const err = await res.text();
+          alert("❌ 删除失败：" + err);
+        }
+      } catch (err) {
+        alert("❌ 网络错误：" + err.message);
+      }
+    }
+
+    loadArticles();
+  </script>
+</body>
+</html>
