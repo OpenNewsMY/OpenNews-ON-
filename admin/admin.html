@@ -5,76 +5,26 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>OpenNews 后台管理</title>
   <style>
-    body {
-      font-family: sans-serif;
-      padding: 2rem;
-      background: #f9f9f9;
-    }
-    h1 {
-      color: #222;
-    }
-    label {
-      display: block;
-      margin-top: 1rem;
-      font-weight: bold;
-    }
+    body { font-family: sans-serif; padding: 2rem; background: #f9f9f9; }
+    h1 { color: #222; }
+    label { display: block; margin-top: 1rem; font-weight: bold; }
     input, textarea, select {
-      width: 100%;
-      padding: 0.5rem;
-      margin-top: 0.5rem;
-      box-sizing: border-box;
+      width: 100%; padding: 0.5rem; margin-top: 0.5rem; box-sizing: border-box;
     }
     button {
-      margin-top: 1rem;
-      padding: 0.7rem 1.5rem;
-      background-color: #007bff;
-      color: white;
-      border: none;
-      cursor: pointer;
-      border-radius: 5px;
+      margin-top: 1rem; padding: 0.7rem 1.5rem; background-color: #007bff;
+      color: white; border: none; cursor: pointer; border-radius: 5px;
     }
     pre {
-      background: #eee;
-      padding: 1rem;
-      white-space: pre-wrap;
-      word-wrap: break-word;
-      margin-top: 2rem;
+      background: #eee; padding: 1rem; white-space: pre-wrap;
+      word-wrap: break-word; margin-top: 2rem;
     }
     .preview {
-      background: #fff;
-      border: 1px solid #ccc;
-      padding: 1rem;
-      margin-top: 1rem;
-    }
-    nav {
-      margin-top: 2rem;
-      margin-bottom: 2rem;
-    }
-    nav button {
-      margin-right: 0.5rem;
-    }
-    .article-list {
-      margin-top: 2rem;
-    }
-    .article-list table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-    .article-list th, .article-list td {
-      border: 1px solid #ccc;
-      padding: 0.5rem;
-      text-align: left;
-    }
-    .article-list th {
-      background: #eee;
-    }
-    .article-list td button {
-      margin-right: 0.5rem;
+      background: #fff; border: 1px solid #ccc; padding: 1rem; margin-top: 1rem;
     }
   </style>
 </head>
 <body>
-
   <script>
     const password = "opennews2025";
     if (sessionStorage.getItem("access") !== "granted") {
@@ -90,110 +40,42 @@
 
   <h1>🔒 OpenNews 后台管理工具</h1>
 
-  <nav>
-    <button onclick="showTab('editor')">📝 发布文章</button>
-    <button onclick="showTab('manager')">📁 文章管理</button>
-  </nav>
+  <label for="title">标题</label>
+  <input type="text" id="title">
 
-  <div id="editor">
-    <label for="title">标题</label>
-    <input type="text" id="title">
+  <label for="date">发布日期</label>
+  <input type="text" id="date" placeholder="如：2025年4月3日">
 
-    <label for="date">发布日期</label>
-    <input type="text" id="date" placeholder="如：2025年4月3日">
+  <label for="category">分类</label>
+  <select id="category">
+    <option>政治</option>
+    <option>本地新闻</option>
+    <option>国际</option>
+    <option>八卦</option>
+    <option>冷知识</option>
+    <option>废闻</option>
+  </select>
 
-    <label for="category">分类</label>
-    <select id="category">
-      <option>政治</option>
-      <option>本地新闻</option>
-      <option>国际</option>
-      <option>八卦</option>
-      <option>冷知识</option>
-      <option>废闻</option>
-    </select>
+  <label for="imageUpload">上传图片</label>
+  <input type="file" id="imageUpload" accept="image/*">
+  <p style="font-size: 0.9rem; color: #777;">将图片自动上传至 GitHub images 文件夹</p>
+  <div id="uploadStatus"></div>
 
-    <label for="imageUpload">上传图片</label>
-    <input type="file" id="imageUpload" accept="image/*">
-    <p style="font-size: 0.9rem; color: #777;">将图片自动上传至 GitHub images 文件夹</p>
-    <div id="uploadStatus"></div>
+  <label for="summary">摘要</label>
+  <textarea id="summary" rows="3"></textarea>
 
-    <label for="summary">摘要</label>
-    <textarea id="summary" rows="3"></textarea>
+  <label for="content">文章内容</label>
+  <textarea id="content" rows="6"></textarea>
 
-    <label for="content">文章内容</label>
-    <textarea id="content" rows="6"></textarea>
+  <button onclick="previewArticle()">预览文章</button>
+  <button onclick="publishArticle()">🚀 发布文章</button>
 
-    <button onclick="previewArticle()">预览文章</button>
-    <button onclick="publishArticle()">🚀 发布文章</button>
-
-    <div class="preview" id="preview"></div>
-    <pre id="output"></pre>
-  </div>
-
-  <div id="manager" style="display:none;">
-    <h2>📁 所有文章</h2>
-    <div class="article-list" id="articleTable"></div>
-  </div>
+  <div class="preview" id="preview"></div>
+  <pre id="output"></pre>
 
   <script>
     let articleId = 100;
     let uploadedImagePath = "";
-    let allArticles = [];
-
-    async function showTab(tab) {
-      document.getElementById('editor').style.display = tab === 'editor' ? 'block' : 'none';
-      document.getElementById('manager').style.display = tab === 'manager' ? 'block' : 'none';
-      if (tab === 'manager') loadArticleList();
-    }
-
-    async function loadArticleList() {
-      const res = await fetch('../articles.json');
-      const data = await res.json();
-      allArticles = data;
-      let html = `<table><tr><th>ID</th><th>标题</th><th>分类</th><th>时间</th><th>操作</th></tr>`;
-      for (const item of data) {
-        html += `<tr>
-          <td>${item.id}</td>
-          <td>${item.title}</td>
-          <td>${item.category}</td>
-          <td>${item.date}</td>
-          <td>
-            <button onclick='editArticle(${item.id})'>✏️ 编辑</button>
-            <button onclick='deleteArticle(${item.id})'>🗑 删除</button>
-          </td>
-        </tr>`;
-      }
-      html += `</table>`;
-      document.getElementById("articleTable").innerHTML = html;
-    }
-
-    function editArticle(id) {
-      const item = allArticles.find(x => x.id === id);
-      articleId = item.id;
-      document.getElementById("title").value = item.title;
-      document.getElementById("date").value = item.date;
-      document.getElementById("category").value = item.category;
-      document.getElementById("summary").value = item.summary;
-      document.getElementById("content").value = item.content;
-      uploadedImagePath = item.image;
-      showTab('editor');
-    }
-
-    async function deleteArticle(id) {
-      const confirmDelete = confirm("确定要删除这篇文章吗？");
-      if (!confirmDelete) return;
-      const res = await fetch("https://opennews-delete.opennews-my.workers.dev/", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id })
-      });
-      if (res.ok) {
-        alert("✅ 已删除文章 ID " + id);
-        loadArticleList();
-      } else {
-        alert("❌ 删除失败");
-      }
-    }
 
     async function fetchNextId() {
       try {
@@ -257,6 +139,7 @@
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ filename, content: html })
       });
+
       const res2 = await fetch("https://opennews-articles.opennews-my.workers.dev/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -265,7 +148,7 @@
 
       if (res1.ok && res2.ok) {
         alert("✅ 已发布文章！");
-        showTab('manager');
+        window.location.reload();
       } else {
         alert("❌ 发布失败");
       }
