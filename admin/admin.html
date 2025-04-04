@@ -109,10 +109,24 @@
     let articleId = 101;
     let uploadedImagePath = "";
 
+    async function fetchLatestArticleId() {
+      try {
+        const res = await fetch("https://opennewsmy.github.io/OpenNews-ON-/articles.json");
+        const articles = await res.json();
+        const maxId = articles.reduce((max, a) => a.id > max ? a.id : max, 0);
+        articleId = maxId + 1;
+        console.log("自动设定 articleId 为：" + articleId);
+      } catch (e) {
+        console.warn("⚠️ 无法读取 articles.json，使用默认 ID 101");
+        articleId = 101;
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", fetchLatestArticleId);
+
     document.getElementById('imageUpload').addEventListener('change', async function(e) {
       const file = e.target.files[0];
       if (!file) return;
-
       const reader = new FileReader();
       reader.onload = async function(event) {
         const base64 = event.target.result.split(',')[1];
@@ -121,7 +135,6 @@
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ filename: file.name, content: base64 })
         });
-
         if (res.ok) {
           const data = await res.json();
           uploadedImagePath = data.url;
@@ -227,3 +240,4 @@
   </script>
 </body>
 </html>
+
