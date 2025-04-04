@@ -1,88 +1,125 @@
-<!DOCTYPE html>
-<html lang="zh-Hans">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>管理文章 | OpenNews</title>
-  <style>
-    body { font-family: sans-serif; padding: 2rem; background: #f9f9f9; }
-    h1 { color: #333; }
-    .article-list { margin-top: 2rem; }
-    .article-card {
-      background: white;
-      padding: 1rem;
-      margin-bottom: 1rem;
-      border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    }
-    .article-card h3 { margin: 0 0 0.5rem; }
-    .article-card small { color: #666; }
-    .buttons { margin-top: 1rem; }
-    button {
-      margin-right: 0.5rem;
-      padding: 0.5rem 1rem;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    .edit { background-color: #007bff; color: white; }
-    .delete { background-color: #dc3545; color: white; }
-  </style>
-</head>
-<body>
-  <h1>📝 管理文章</h1>
-  <div class="article-list" id="article-list">正在载入文章...</div>
-
-  <script>
-    async function loadArticles() {
-      const container = document.getElementById('article-list');
-      try {
-        const res = await fetch("https://opennewsmy.github.io/OpenNews-ON-/articles.json");
-        const articles = await res.json();
-        container.innerHTML = '';
-        articles.forEach(article => {
-          const div = document.createElement('div');
-          div.className = 'article-card';
-          div.innerHTML = `
-            <h3>${article.title}</h3>
-            <small>${article.date} ｜ 分类：${article.category}</small>
-            <div class="buttons">
-              <button class="edit" onclick="editArticle(${article.id})">编辑</button>
-              <button class="delete" onclick="deleteArticle(${article.id})">删除</button>
-            </div>
-          `;
-          container.appendChild(div);
-        });
-      } catch (err) {
-        container.innerHTML = '❌ 无法加载文章：' + err.message;
-      }
-    }
-
-    function editArticle(id) {
-      window.location.href = `admin.html?id=${id}`;
-    }
-
-    async function deleteArticle(id) {
-      if (!confirm(`确定要删除文章 ID ${id} 吗？此操作无法恢复。`)) return;
-      try {
-        const res = await fetch("https://opennews-publish.opennews-my.workers.dev/", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ deleteId: id })
-        });
-        if (res.ok) {
-          alert("✅ 删除成功！");
-          loadArticles();
-        } else {
-          const err = await res.text();
-          alert("❌ 删除失败：" + err);
+export default {
+  async fetch(request, env, ctx) {
+    if (request.method === "OPTIONS") {
+      return new Response(null, {
+        status: 204,
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "POST, OPTIONS",
+          "Access-Control-Allow-Headers": "Content-Type"
         }
+      });
+    }
+
+    if (request.method !== "POST") {
+      return new Response("Method not allowed", { status: 405 });
+    }
+
+    function corsHeaders(body, status = 200) {
+      return new Response(body, {
+        status,
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "POST, OPTIONS",
+          "Access-Control-Allow-Headers": "Content-Type"
+        }
+      });
+    }
+
+    const body = await request.json();
+    const { filename, content, updateJson, deleteId } = body;
+
+    const owner = env.GITHUB_OWNER;
+    const repo = env.GITHUB_REPO;
+    const token = env.GITHUB_TOKEN;
+    const branch = "main";
+    const jsonPath = env.GITHUB_JSON_PATH;
+
+    const apiHeaders = {
+      Authorization: `Bearer ${token}`,
+      "User-Agent": "OpenNewsPublisher"
+    };
+
+    async function uploadToGitHub(path, data, message, sha = null) {
+      const url = `https://api.github.com/repos/${owner}/${repo}/contents/${path}`;
+      const payload = {
+        message,
+        content: btoa(unescape(encodeURIComponent(data))),
+        branch
+      };
+      if (sha) payload.sha = sha;
+
+      const res = await fetch(url, {
+        method: "PUT",
+        headers: { ...apiHeaders, "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      if (!res.ok) throw new Error(await res.text());
+    }
+
+    async function deleteFromGitHub(path) {
+      const url = `https://api.github.com/repos/${owner}/${repo}/contents/${path}`;
+      const res = await fetch(url, { headers: apiHeaders });
+      if (!res.ok) throw new Error("找不到要删除的文件：" + path);
+      const { sha } = await res.json();
+
+      const delRes = await fetch(url, {
+        method: "DELETE",
+        headers: { ...apiHeaders, "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message: `删除 ${path}`,
+          sha,
+          branch
+        })
+      });
+      if (!delRes.ok) throw new Error(await delRes.text());
+    }
+
+    if (deleteId) {
+      const articlePath = `article-${deleteId}.html`;
+      const jsonUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${jsonPath}`;
+
+      try {
+        await deleteFromGitHub(articlePath);
+        const res = await fetch(jsonUrl, { headers: apiHeaders });
+        const jsonFile = await res.json();
+        const data = JSON.parse(atob(jsonFile.content));
+        const updated = data.filter(item => item.id !== deleteId);
+
+        await uploadToGitHub(
+          jsonPath,
+          JSON.stringify(updated, null, 2),
+          `删除文章 ID ${deleteId}`,
+          jsonFile.sha
+        );
+
+        return corsHeaders("✅ 删除成功", 200);
       } catch (err) {
-        alert("❌ 网络错误：" + err.message);
+        return corsHeaders("❌ 删除失败：" + err.message, 500);
       }
     }
 
-    loadArticles();
-  </script>
-</body>
-</html>
+    try {
+      await uploadToGitHub(filename, content, `新增 ${filename}`);
+
+      if (updateJson) {
+        const jsonUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${jsonPath}`;
+        const res = await fetch(jsonUrl, { headers: apiHeaders });
+        const jsonFile = await res.json();
+        const existing = JSON.parse(atob(jsonFile.content));
+        existing.push(updateJson);
+
+        await uploadToGitHub(
+          jsonPath,
+          JSON.stringify(existing, null, 2),
+          `更新 ${jsonPath}：追加 ${updateJson.id}`,
+          jsonFile.sha
+        );
+      }
+
+      return corsHeaders("✅ 上传成功", 200);
+    } catch (err) {
+      return corsHeaders("❌ 错误：" + err.message, 500);
+    }
+  }
+};
