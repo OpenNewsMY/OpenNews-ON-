@@ -1,9 +1,9 @@
-/* style.css - 响应式升级版 */
+/* style.css - 浅白黄背景风格 */
 
 body {
   font-family: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", "Helvetica Neue", sans-serif;
-  background-color: rgb(218, 158, 62);
-  color: white;
+  background-color: #fef9f1; /* 淡淡米黄色 */
+  color: rgb(46, 65, 86);
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -13,6 +13,7 @@ header {
   background-color: rgb(46, 65, 86);
   padding: 2rem;
   text-align: center;
+  color: white;
 }
 
 header h1 {
@@ -70,7 +71,7 @@ main {
 
 #news-section h2 {
   text-align: center;
-  color: white;
+  color: rgb(46, 65, 86);
 }
 
 #news-list {
@@ -81,11 +82,11 @@ main {
 }
 
 .article {
-  background-color: rgba(255,255,255,0.1);
+  background-color: white;
   border-radius: 12px;
   padding: 1rem;
-  color: white;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  color: rgb(46, 65, 86);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
   transition: transform 0.2s;
 }
 
@@ -107,6 +108,7 @@ main {
   font-size: 0.8rem;
   font-style: normal;
   margin-top: 0.5rem;
+  color: white;
 }
 
 #search {
@@ -137,9 +139,9 @@ footer {
   padding: 1.5rem;
   font-size: 0.9rem;
   margin-top: 3rem;
+  color: white;
 }
 
-/* 📱 手机、平板优化 */
 @media (max-width: 768px) {
   header h1 {
     font-size: 1.3rem;
@@ -184,7 +186,6 @@ footer {
   }
 }
 
-/* 日期筛选样式 */
 #dateFilter {
   padding: 0.4rem 0.6rem;
   border-radius: 6px;
@@ -194,4 +195,3 @@ footer {
   background: white;
   color: rgb(46, 65, 86);
 }
-
