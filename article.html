@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>文章详情 | OpenNews</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .container {
+      max-width: 800px;
+      margin: 2rem auto;
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .container img {
+      max-width: 100%;
+      border-radius: 8px;
+      margin: 1rem 0;
+    }
+    .back {
+      text-align: center;
+      margin-top: 2rem;
+    }
+    .back a {
+      text-decoration: none;
+      color: rgb(46, 65, 86);
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div id="article"></div>
+    <div class="back">
+      <a href="index.html">← 返回首页</a>
+    </div>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const id = parseInt(params.get("id"));
+
+    fetch("articles.json")
+      .then((res) => res.json())
+      .then((data) => {
+        const article = data.find((a) => a.id === id);
+        if (!article) {
+          document.getElementById("article").innerHTML = "<p>找不到这篇文章。</p>";
+          return;
+        }
+
+        const html = `
+          <h1>${article.title}</h1>
+          <p><strong>${article.date}</strong> | 分类：${article.category}</p>
+          ${article.image ? `<img src="${article.image}" alt="">` : ""}
+          <div>${article.content}</div>
+        `;
+
+        document.getElementById("article").innerHTML = html;
+      })
+      .catch((err) => {
+        document.getElementById("article").innerHTML = "<p>加载失败。</p>";
+        console.error(err);
+      });
+  </script>
+</body>
+</html>
