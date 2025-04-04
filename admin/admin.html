@@ -106,8 +106,21 @@
   <pre id="uploaded"></pre>
 
   <script>
-    let articleId = 101;
     let uploadedImagePath = "";
+    let articleId = 100;
+
+    async function fetchNextId() {
+      try {
+        const res = await fetch("../articles.json");
+        const data = await res.json();
+        const maxId = data.reduce((max, article) => Math.max(max, article.id || 0), 0);
+        articleId = maxId + 1;
+        console.log("🚀 自动设定 ID:", articleId);
+      } catch (err) {
+        console.warn("无法获取 JSON，使用默认 ID 100");
+      }
+    }
+    fetchNextId();
 
     document.getElementById('imageUpload').addEventListener('change', async function(e) {
       const file = e.target.files[0];
