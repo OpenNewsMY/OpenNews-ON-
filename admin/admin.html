@@ -83,7 +83,7 @@
 
   <label for="imageUpload">上传图片</label>
   <input type="file" id="imageUpload" accept="image/*">
-  <p style="font-size: 0.9rem; color: #777;">将图片自动上传至 GitHub images 文件夹</p>
+  <p style="font-size: 0.9rem; color: #777;">图片会自动上传到 GitHub images 文件夹</p>
   <div id="uploadStatus"></div>
 
   <label for="summary">摘要</label>
@@ -112,6 +112,7 @@
     document.getElementById('imageUpload').addEventListener('change', async function(e) {
       const file = e.target.files[0];
       if (!file) return;
+
       const reader = new FileReader();
       reader.onload = async function(event) {
         const base64 = event.target.result.split(',')[1];
@@ -120,10 +121,11 @@
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ filename: file.name, content: base64 })
         });
+
         if (res.ok) {
           const data = await res.json();
           uploadedImagePath = data.url;
-          document.getElementById("uploadStatus").innerHTML = `✅ 上传成功：<code>${uploadedImagePath}</code>`;
+          document.getElementById("uploadStatus").innerHTML = `✅ 上传成功：<a href='${uploadedImagePath}' target='_blank'>${uploadedImagePath}</a>`;
         } else {
           const err = await res.text();
           document.getElementById("uploadStatus").innerHTML = `❌ 上传失败：${err}`;
@@ -160,39 +162,6 @@
         <p>${content}</p>
       `;
       document.getElementById('preview').innerHTML = html;
-    }
-
-    function generateHTML() {
-      const { title, date, category, summary, content, image, id } = collectArticleData();
-      const ogImage = image ? `<meta property='og:image' content='${image}'>` : "";
-      const filename = `article-${id}.html`;
-      const html = `<!DOCTYPE html>
-<html lang='zh-Hans'>
-<head>
-  <meta charset='UTF-8'>
-  <meta name='viewport' content='width=device-width, initial-scale=1.0'>
-  <title>${title}</title>
-  <meta property='og:title' content='${title}'>
-  <meta property='og:description' content='${summary}'>
-  ${ogImage}
-  <meta property='og:url' content='https://opennewsmy.github.io/OpenNews-ON-/${filename}'>
-  <meta property='og:type' content='article'>
-  <meta name='twitter:card' content='summary_large_image'>
-  <style>
-    body { font-family: sans-serif; background: #fef9f1; padding: 2rem; max-width: 800px; margin: auto; line-height: 1.7; }
-    img { max-width: 100%; border-radius: 8px; margin: 1rem 0; }
-    .meta { color: #555; font-size: 0.9rem; margin-bottom: 1rem; }
-  </style>
-</head>
-<body>
-  <h1>${title}</h1>
-  <div class='meta'>${date} ｜ 分类：${category}</div>
-  ${image ? `<img src='${image}' alt=''>` : ""}
-  <p><strong>${summary}</strong></p>
-  <div>${content}</div>
-</body>
-</html>`;
-      document.getElementById('output').textContent = html;
     }
 
     async function publishArticle() {
@@ -256,9 +225,5 @@
       reader.readAsText(file);
     });
   </script>
-</body>
-</html>
-
-
 </body>
 </html>
