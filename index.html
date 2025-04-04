@@ -2,9 +2,8 @@
 <html lang="zh-Hans">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>ON新闻网 | OpenNews</title>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -20,20 +19,26 @@
 
   <nav id="nav-menu">
     <a href="#" onclick="filterArticles('全部')">全部</a>
-    <a href="#" onclick="filterArticles('本地新闻')">本地新闻</a>
-    <a href="#" onclick="filterArticles('国际')">国际</a>
     <a href="#" onclick="filterArticles('政治')">政治</a>
     <a href="#" onclick="filterArticles('八卦')">八卦</a>
+    <a href="#" onclick="filterArticles('国际')">国际</a>
     <a href="#" onclick="filterArticles('冷知识')">冷知识</a>
     <a href="#" onclick="filterArticles('废闻')">废闻</a>
-    <a href="about.html">关于我们</a>
-    <a href="contact.html">联络方式</a>
-    <a href="contact.html#feedback">意见反馈</a>
-   <section id="search">
-    <input type="text" id="searchInput" placeholder="输入关键词搜索...">
-    <button onclick="searchArticles()">搜索</button>
-  </section>
-</nav>
+    <a href="#about">关于我们</a>
+    <a href="#contact">联络方式</a>
+    <a href="#feedback">意见反馈</a>
+    <section id="search">
+      <input type="text" id="searchInput" placeholder="输入关键词搜索...">
+      <button onclick="searchArticles()">搜索</button>
+    </section>
+  </nav>
+
+  <div style="text-align: center; margin: 1rem;">
+    <label for="dateFilter">📅 按日期筛选：</label>
+    <select id="dateFilter" onchange="filterByDate()">
+      <option value="全部">全部</option>
+    </select>
+  </div>
 
   <main>
     <section id="news-section">
@@ -46,13 +51,14 @@
     <p>&copy; 2025 OpenNews ON新闻网. All rights reserved.</p>
   </footer>
 
-  <script>
-    function toggleMenu() {
-      const nav = document.getElementById("nav-menu");
-      nav.style.display = nav.style.display === "block" ? "none" : "block";
-    }
-  </script>
-  <script src="script.js"></script>
+<script>
+  function toggleMenu() {
+    const nav = document.getElementById("nav-menu");
+    nav.style.display = nav.style.display === "block" ? "none" : "block";
+  }
+</script>
+
+<script src="script.js"></script>
 </body>
 </html>
 
