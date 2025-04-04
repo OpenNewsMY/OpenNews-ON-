@@ -8,6 +8,7 @@ fetch("articles.json")
   .then((data) => {
     articlesData = data;
     renderArticles(articlesData);
+    populateDateFilter();
   });
 
 function renderArticles(articles) {
@@ -56,4 +57,25 @@ function searchArticles() {
     (a.content && a.content.toLowerCase().includes(keyword))
   );
   renderArticles(results);
+}
+
+function populateDateFilter() {
+  const dateSet = new Set(articlesData.map(a => a.date));
+  const select = document.getElementById("dateFilter");
+  dateSet.forEach(date => {
+    const option = document.createElement("option");
+    option.value = date;
+    option.textContent = date;
+    select.appendChild(option);
+  });
+}
+
+function filterByDate() {
+  const selectedDate = document.getElementById("dateFilter").value;
+  if (selectedDate === "全部") {
+    renderArticles(articlesData);
+  } else {
+    const filtered = articlesData.filter((a) => a.date === selectedDate);
+    renderArticles(filtered);
+  }
 }
