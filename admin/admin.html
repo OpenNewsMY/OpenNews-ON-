@@ -50,162 +50,215 @@
 </head>
 <body>
 
-<script>
-  const password = "opennews2025";
-  if (sessionStorage.getItem("access") !== "granted") {
-    const input = prompt("请输入后台密码");
-    if (input !== password) {
-      alert("密码错误，无法进入后台");
-      window.location.href = "/";
-    } else {
-      sessionStorage.setItem("access", "granted");
+  <script>
+    const password = "opennews2025";
+    if (sessionStorage.getItem("access") !== "granted") {
+      const input = prompt("请输入后台密码");
+      if (input !== password) {
+        alert("密码错误，无法进入后台");
+        window.location.href = "/";
+      } else {
+        sessionStorage.setItem("access", "granted");
+      }
     }
-  }
-</script>
+  </script>
 
-<h1>🔒 OpenNews 后台管理工具</h1>
+  <h1>🔒 OpenNews 后台管理工具</h1>
 
-<label for="title">标题</label>
-<input type="text" id="title">
+  <label for="title">标题</label>
+  <input type="text" id="title">
 
-<label for="date">发布日期</label>
-<input type="text" id="date" placeholder="如：2025年4月3日">
+  <label for="date">发布日期</label>
+  <input type="text" id="date" placeholder="如：2025年4月3日">
 
-<label for="category">分类</label>
-<select id="category">
-  <option>政治</option>
-  <option>本地新闻</option>
-  <option>国际</option>
-  <option>八卦</option>
-  <option>冷知识</option>
-  <option>废闻</option>
-</select>
+  <label for="category">分类</label>
+  <select id="category">
+    <option>政治</option>
+    <option>本地新闻</option>
+    <option>国际</option>
+    <option>八卦</option>
+    <option>冷知识</option>
+    <option>废闻</option>
+  </select>
 
-<label for="imageUpload">上传图片</label>
-<input type="file" id="imageUpload" accept="image/*">
-<p style="font-size: 0.9rem; color: #777;">将图片自动上传至 GitHub images 文件夹</p>
-<div id="uploadStatus"></div>
+  <label for="imageUpload">上传图片</label>
+  <input type="file" id="imageUpload" accept="image/*">
+  <p style="font-size: 0.9rem; color: #777;">将图片自动上传至 GitHub images 文件夹</p>
+  <div id="uploadStatus"></div>
 
-<label for="summary">摘要</label>
-<textarea id="summary" rows="3"></textarea>
+  <label for="summary">摘要</label>
+  <textarea id="summary" rows="3"></textarea>
 
-<label for="content">文章内容（可用 \n 换段）</label>
-<textarea id="content" rows="6"></textarea>
+  <label for="content">文章内容</label>
+  <textarea id="content" rows="6"></textarea>
 
-<button onclick="previewArticle()">预览文章</button>
-<button onclick="generateJSON()">生成 JSON</button>
-<button onclick="copyJSON()">📋 复制 JSON</button>
+  <button onclick="previewArticle()">预览文章</button>
+  <button onclick="generateJSON()">生成 JSON</button>
+  <button onclick="generateHTML()">生成静态 HTML</button>
+  <button onclick="publishArticle()">🚀 发布文章（自动上传到 GitHub）</button>
 
-<div class="preview" id="preview"></div>
-<pre id="output"></pre>
+  <div class="preview" id="preview"></div>
+  <pre id="output"></pre>
 
-<hr>
+  <hr>
+  <h2>📂 上传 JSON 批量导入</h2>
+  <input type="file" id="jsonFile" accept=".json">
+  <pre id="uploaded"></pre>
 
-<h2>📂 上传 JSON 批量导入</h2>
-<input type="file" id="jsonFile" accept=".json">
-<pre id="uploaded"></pre>
+  <script>
+    let articleId = 101;
+    let uploadedImagePath = "";
 
-<script>
-  let articleId = 1;
-  let uploadedImagePath = "";
+    document.getElementById('imageUpload').addEventListener('change', async function(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = async function(event) {
+        const base64 = event.target.result.split(',')[1];
+        const res = await fetch("https://opennews-uploader.opennews-my.workers.dev/", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ filename: file.name, content: base64 })
+        });
+        if (res.ok) {
+          const data = await res.json();
+          uploadedImagePath = data.url;
+          document.getElementById("uploadStatus").innerHTML = `✅ 上传成功：<code>${uploadedImagePath}</code>`;
+        } else {
+          const err = await res.text();
+          document.getElementById("uploadStatus").innerHTML = `❌ 上传失败：${err}`;
+        }
+      };
+      reader.readAsDataURL(file);
+    });
 
-  // 尝试加载现有 JSON 并找出最大 id
-  fetch("../articles.json")
-    .then(res => res.json())
-    .then(data => {
-      const maxId = Math.max(...data.map(a => a.id || 0));
-      articleId = maxId + 1;
-      console.log("下一个文章 ID:", articleId);
-    })
-    .catch(err => console.log("无法读取 articles.json：", err));
+    function collectArticleData() {
+      return {
+        id: articleId,
+        title: document.getElementById('title').value,
+        date: document.getElementById('date').value,
+        category: document.getElementById('category').value,
+        image: uploadedImagePath,
+        summary: document.getElementById('summary').value,
+        content: document.getElementById('content').value
+      };
+    }
 
-  document.getElementById('imageUpload').addEventListener('change', async function(e) {
-    const file = e.target.files[0];
-    if (!file) return;
+    function generateJSON() {
+      const json = collectArticleData();
+      document.getElementById('output').textContent = JSON.stringify(json, null, 2);
+    }
 
-    const reader = new FileReader();
-    reader.onload = async function(event) {
-      const base64 = event.target.result.split(',')[1];
-      const res = await fetch("https://opennews-uploader.opennews-my.workers.dev/", {
+    function previewArticle() {
+      const { title, date, category, summary, content } = collectArticleData();
+      const img = uploadedImagePath ? `<img src="${uploadedImagePath}" style="max-width:100%;"><br><br>` : "";
+      const html = `
+        <h3>${title}</h3>
+        <p><strong>${date}</strong> | 分类：${category}</p>
+        ${img}
+        <p><strong>摘要：</strong>${summary}</p>
+        <p>${content}</p>
+      `;
+      document.getElementById('preview').innerHTML = html;
+    }
+
+    function generateHTML() {
+      const { title, date, category, summary, content, image, id } = collectArticleData();
+      const ogImage = image ? `<meta property='og:image' content='${image}'>` : "";
+      const filename = `article-${id}.html`;
+      const html = `<!DOCTYPE html>
+<html lang='zh-Hans'>
+<head>
+  <meta charset='UTF-8'>
+  <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+  <title>${title}</title>
+  <meta property='og:title' content='${title}'>
+  <meta property='og:description' content='${summary}'>
+  ${ogImage}
+  <meta property='og:url' content='https://opennewsmy.github.io/OpenNews-ON-/${filename}'>
+  <meta property='og:type' content='article'>
+  <meta name='twitter:card' content='summary_large_image'>
+  <style>
+    body { font-family: sans-serif; background: #fef9f1; padding: 2rem; max-width: 800px; margin: auto; line-height: 1.7; }
+    img { max-width: 100%; border-radius: 8px; margin: 1rem 0; }
+    .meta { color: #555; font-size: 0.9rem; margin-bottom: 1rem; }
+  </style>
+</head>
+<body>
+  <h1>${title}</h1>
+  <div class='meta'>${date} ｜ 分类：${category}</div>
+  ${image ? `<img src='${image}' alt=''>` : ""}
+  <p><strong>${summary}</strong></p>
+  <div>${content}</div>
+</body>
+</html>`;
+      document.getElementById('output').textContent = html;
+    }
+
+    async function publishArticle() {
+      const article = collectArticleData();
+      const filename = `article-${article.id}.html`;
+      const ogImage = article.image ? `<meta property='og:image' content='${article.image}'>` : "";
+      const html = `<!DOCTYPE html>
+<html lang='zh-Hans'>
+<head>
+  <meta charset='UTF-8'>
+  <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+  <title>${article.title}</title>
+  <meta property='og:title' content='${article.title}'>
+  <meta property='og:description' content='${article.summary}'>
+  ${ogImage}
+  <meta property='og:url' content='https://opennewsmy.github.io/OpenNews-ON-/${filename}'>
+  <meta property='og:type' content='article'>
+  <meta name='twitter:card' content='summary_large_image'>
+  <style>
+    body { font-family: sans-serif; background: #fef9f1; padding: 2rem; max-width: 800px; margin: auto; line-height: 1.7; }
+    img { max-width: 100%; border-radius: 8px; margin: 1rem 0; }
+    .meta { color: #555; font-size: 0.9rem; margin-bottom: 1rem; }
+  </style>
+</head>
+<body>
+  <h1>${article.title}</h1>
+  <div class='meta'>${article.date} ｜ 分类：${article.category}</div>
+  ${article.image ? `<img src='${article.image}' alt=''>` : ""}
+  <p><strong>${article.summary}</strong></p>
+  <div>${article.content}</div>
+</body>
+</html>`;
+
+      const res = await fetch("https://opennews-publish.opennews-my.workers.dev/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ filename: file.name, content: base64 })
+        body: JSON.stringify({ filename, content: html })
       });
 
       if (res.ok) {
-        const data = await res.json();
-        uploadedImagePath = data.url;
-        document.getElementById("uploadStatus").innerHTML = `✅ 上传成功：<code>${uploadedImagePath}</code>`;
+        const url = `https://opennewsmy.github.io/OpenNews-ON-/${filename}`;
+        alert("✅ 上传成功！你可以分享链接：\n" + url);
       } else {
         const err = await res.text();
-        document.getElementById("uploadStatus").innerHTML = `❌ 上传失败：${err}`;
+        alert("❌ 上传失败：" + err);
       }
-    };
-    reader.readAsDataURL(file);
-  });
+    }
 
-  function generateJSON() {
-    const title = document.getElementById('title').value;
-    const date = document.getElementById('date').value;
-    const category = document.getElementById('category').value;
-    const summary = document.getElementById('summary').value;
-    const contentRaw = document.getElementById('content').value;
-    const content = contentRaw.split('\n').map(p => `<p>${p}</p>`).join('\n');
+    document.getElementById('jsonFile').addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const data = JSON.parse(e.target.result);
+          document.getElementById('uploaded').textContent = JSON.stringify(data, null, 2);
+        } catch (err) {
+          alert('上传的文件不是有效的 JSON');
+        }
+      };
+      reader.readAsText(file);
+    });
+  </script>
+</body>
+</html>
 
-    const json = {
-      id: articleId++,
-      title,
-      date,
-      category,
-      image: uploadedImagePath,
-      summary,
-      content
-    };
-
-    document.getElementById('output').textContent = JSON.stringify(json, null, 2);
-  }
-
-  function previewArticle() {
-    const title = document.getElementById('title').value;
-    const date = document.getElementById('date').value;
-    const category = document.getElementById('category').value;
-    const summary = document.getElementById('summary').value;
-    const contentRaw = document.getElementById('content').value;
-    const paragraphs = contentRaw.split('\n').map(p => `<p>${p}</p>`).join('');
-    const img = uploadedImagePath ? `<img src="${uploadedImagePath}" style="max-width:100%;"><br><br>` : "";
-
-    const html = `
-      <h3>${title}</h3>
-      <p><strong>${date}</strong> | 分类：${category}</p>
-      ${img}
-      <p><strong>摘要：</strong>${summary}</p>
-      ${paragraphs}
-    `;
-    document.getElementById('preview').innerHTML = html;
-  }
-
-  function copyJSON() {
-    const jsonText = document.getElementById('output').textContent;
-    navigator.clipboard.writeText(jsonText)
-      .then(() => alert("✅ JSON 已复制！"))
-      .catch(err => alert("❌ 复制失败"));
-  }
-
-  document.getElementById('jsonFile').addEventListener('change', function(e) {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      try {
-        const data = JSON.parse(e.target.result);
-        document.getElementById('uploaded').textContent = JSON.stringify(data, null, 2);
-      } catch (err) {
-        alert('上传的文件不是有效的 JSON');
-      }
-    };
-    reader.readAsText(file);
-  });
-</script>
 
 </body>
 </html>
