@@ -9,44 +9,43 @@
     body {
       font-family: 'Noto Sans SC', sans-serif;
       padding: 2rem;
-      background: #f9f9f9;
+      background: #fef9f1;
       max-width: 900px;
       margin: auto;
     }
     h1 {
-      color: #222;
-    }
-    .article-item {
-      border-bottom: 1px solid #ddd;
-      padding: 0.5rem 0;
-    }
-    .article-item span {
-      display: inline-block;
-      margin-right: 1rem;
-    }
-    .actions button {
-      margin-right: 0.5rem;
-      background-color: #666;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      padding: 0.4rem 0.8rem;
-      cursor: pointer;
-    }
-    .actions .delete {
-      background-color: #e74c3c;
-    }
-    .pagination {
-      margin-top: 1rem;
       text-align: center;
     }
-    .pagination button {
-      margin: 0 0.3rem;
-      padding: 0.4rem 0.8rem;
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 2rem;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 0.5rem;
+      text-align: left;
+    }
+    th {
+      background: #eee;
+    }
+    button {
+      padding: 0.3rem 0.6rem;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .edit {
+      background-color: #ffc107;
+      color: white;
+    }
+    .delete {
+      background-color: #dc3545;
+      color: white;
     }
     nav {
       text-align: right;
-      margin-bottom: 1.5rem;
+      margin-bottom: 1rem;
     }
     nav a {
       text-decoration: none;
@@ -59,89 +58,66 @@
 </head>
 <body>
 
-<script>
-  const password = "opennews2025";
-  if (sessionStorage.getItem("access") !== "granted") {
-    const input = prompt("请输入后台密码");
-    if (input !== password) {
-      alert("密码错误，无法进入后台");
-      window.location.href = "/";
-    } else {
-      sessionStorage.setItem("access", "granted");
-    }
-  }
-</script>
-
 <nav>
-  <a href="https://opennewsmy.github.io/OpenNews-ON-/admin/admin.html">📝 发布新文章</a>
+  <a href="/OpenNews-ON-/admin.html">📝 发布新文章</a>
 </nav>
 
-<h1>📚 管理文章</h1>
-<div id="article-list"></div>
-<div class="pagination" id="pagination"></div>
+<h1>🗂 管理文章</h1>
+<table>
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>标题</th>
+      <th>日期</th>
+      <th>分类</th>
+      <th>操作</th>
+    </tr>
+  </thead>
+  <tbody id="articleTable">
+  </tbody>
+</table>
 
 <script>
-let allArticles = [];
-let currentPage = 1;
-const perPage = 10;
-
-function fetchArticles() {
-  fetch('https://raw.githubusercontent.com/OpenNewsMy/OpenNews-ON-/main/articles.json')
-    .then(res => res.json())
-    .then(data => {
-      allArticles = data.sort((a, b) => b.id - a.id);
-      renderArticles();
+fetch("https://raw.githubusercontent.com/OpenNewsMy/OpenNews-ON-/main/articles.json")
+  .then(res => res.json())
+  .then(data => {
+    const tbody = document.getElementById("articleTable");
+    data.forEach(article => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${article.id}</td>
+        <td>${article.title}</td>
+        <td>${article.date}</td>
+        <td>${article.category}</td>
+        <td>
+          <button class="edit" onclick="editArticle(${article.id})">编辑</button>
+          <button class="delete" onclick="deleteArticle(${article.id})">删除</button>
+        </td>
+      `;
+      tbody.appendChild(tr);
     });
-}
+  });
 
-function renderArticles() {
-  const start = (currentPage - 1) * perPage;
-  const current = allArticles.slice(start, start + perPage);
-  const container = document.getElementById("article-list");
-  container.innerHTML = current.map(item => `
-    <div class="article-item">
-      <span>🆔 ${item.id}</span>
-      <span>📅 ${item.date}</span>
-      <span>📰 ${item.title}</span>
-      <span>🗂 ${item.category}</span>
-      <div class="actions">
-        <button onclick='editArticle(${item.id})'>✏️ 编辑</button>
-        <button class="delete" onclick='deleteArticle(${item.id})'>🗑 删除</button>
-      </div>
-    </div>`).join('');
-
-  const pageCount = Math.ceil(allArticles.length / perPage);
-  const pagination = document.getElementById("pagination");
-  pagination.innerHTML = Array.from({length: pageCount}, (_, i) => `
-    <button onclick="gotoPage(${i + 1})">${i + 1}</button>
-  `).join('');
-}
-
-function gotoPage(page) {
-  currentPage = page;
-  renderArticles();
+function editArticle(id) {
+  window.location.href = `/OpenNews-ON-/admin.html?edit=${id}`;
 }
 
 function deleteArticle(id) {
-  if (!confirm("确认要删除这篇文章？")) return;
+  if (!confirm("确认删除这篇文章？")) return;
   fetch("https://opennews-delete.opennews-my.workers.dev/", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ id })
   })
-  .then(res => res.text())
-  .then(msg => {
-    alert(msg);
-    fetchArticles();
-  });
+    .then(res => res.text())
+    .then(result => {
+      alert("✅ 删除成功");
+      location.reload();
+    })
+    .catch(err => alert("❌ 删除失败：" + err));
 }
-
-function editArticle(id) {
-  window.location.href = `https://opennewsmy.github.io/OpenNews-ON-/admin.html?edit=${id}`;
-}
-
-window.onload = fetchArticles;
 </script>
+
 </body>
 </html>
 
