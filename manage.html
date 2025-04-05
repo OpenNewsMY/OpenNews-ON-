@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>文章管理 - OpenNews</title>
+  <title>OpenNews 管理文章</title>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC&display=swap" rel="stylesheet">
   <style>
     body {
@@ -52,21 +52,18 @@
       padding: 0.5rem 1rem;
       border-radius: 5px;
     }
-    .pagination {
+    #pagination {
       text-align: center;
       margin-top: 2rem;
     }
-    .pagination button {
-      padding: 0.5rem 1rem;
-      margin: 0 0.3rem;
-      background-color: #ddd;
+    #pagination button {
+      padding: 0.4rem 1rem;
+      margin: 0 5px;
       border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    .pagination button.active {
+      border-radius: 4px;
       background-color: #007bff;
       color: white;
+      cursor: pointer;
     }
   </style>
 </head>
@@ -91,24 +88,24 @@
 
 <h1>🗂️ 文章管理</h1>
 <div id="article-list"></div>
-<div class="pagination" id="pagination"></div>
+<div id="pagination"></div>
 
 <script>
-let allArticles = [];
 let currentPage = 1;
 const perPage = 5;
+let allArticles = [];
 
 function renderArticles(page = 1) {
   const container = document.getElementById("article-list");
   container.innerHTML = "";
+
   const start = (page - 1) * perPage;
   const end = start + perPage;
-  const articles = allArticles.slice(start, end);
+  const pageArticles = allArticles.slice(start, end);
 
-  articles.forEach(article => {
+  pageArticles.forEach(article => {
     const box = document.createElement("div");
     box.className = "article-box";
-
     box.innerHTML = `
       <h3>${article.title}</h3>
       <p><strong>${article.date}</strong> | 分类：${article.category}</p>
@@ -124,28 +121,29 @@ function renderArticles(page = 1) {
 }
 
 function renderPagination() {
-  const pages = Math.ceil(allArticles.length / perPage);
-  const container = document.getElementById("pagination");
-  container.innerHTML = "";
-  for (let i = 1; i <= pages; i++) {
+  const totalPages = Math.ceil(allArticles.length / perPage);
+  const pagination = document.getElementById("pagination");
+  pagination.innerHTML = "";
+
+  for (let i = 1; i <= totalPages; i++) {
     const btn = document.createElement("button");
     btn.textContent = i;
-    if (i === currentPage) btn.classList.add("active");
     btn.onclick = () => {
       currentPage = i;
       renderArticles(i);
     };
-    container.appendChild(btn);
+    pagination.appendChild(btn);
   }
 }
 
 function editArticle(article) {
   localStorage.setItem("editArticle", JSON.stringify(article));
-  location.href = "/OpenNews-ON-/admin.html?edit=" + article.id;
+  location.href = `/OpenNews-ON-/admin.html?edit=${article.id}`;
 }
 
 function deleteArticle(id) {
   if (!confirm("确定要删除这篇文章吗？")) return;
+
   fetch("https://opennews-delete.opennews-my.workers.dev/", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -166,6 +164,8 @@ fetch("https://raw.githubusercontent.com/OpenNewsMy/OpenNews-ON-/main/articles.j
     renderArticles();
   });
 </script>
+
 </body>
 </html>
+
 
