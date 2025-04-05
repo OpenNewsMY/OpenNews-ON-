@@ -1,128 +1,61 @@
 <!DOCTYPE html>
 <html lang="zh-Hans">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>文章详情 | OpenNews</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OpenNews 文章</title>
+  <meta property="og:title" content="OpenNews | 文章标题">
+  <meta property="og:image" content="">
+  <meta property="og:description" content="文章摘要">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
-  <style>
-    body {
-      background-color: rgb(218, 158, 62);
-      color: rgb(46, 65, 86);
-      font-family: "Noto Sans SC", sans-serif;
-      margin: 0;
-      padding: 0;
-    }
-    .container {
-      max-width: 900px;
-      margin: 2rem auto;
-      background: white;
-      padding: 2rem;
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      line-height: 1.7;
-    }
-    .container img {
-      max-width: 100%;
-      border-radius: 8px;
-      margin: 1rem 0;
-    }
-    h1 {
-      font-size: 1.8rem;
-      margin-bottom: 0.5rem;
-    }
-    .meta {
-      font-size: 0.95rem;
-      color: #555;
-      margin-bottom: 1rem;
-    }
-    .back {
-      text-align: center;
-      margin-top: 2rem;
-    }
-    .back a {
-      text-decoration: none;
-      color: rgb(46, 65, 86);
-      font-weight: bold;
-      border: 1px solid rgb(46, 65, 86);
-      padding: 0.4rem 1rem;
-      border-radius: 6px;
-    }
-
-    @media (max-width: 768px) {
-      .container {
-        margin: 1rem;
-        padding: 1rem;
-      }
-      h1 {
-        font-size: 1.4rem;
-      }
-      .meta {
-        font-size: 0.85rem;
-      }
-    }
-  </style>
-  <script>
-    // 动态设置 OG 标签函数
-    function setOGMetaTags(article) {
-      const head = document.head;
-
-      const meta = (prop, content) => {
-        const tag = document.createElement("meta");
-        tag.setAttribute("property", prop);
-        tag.setAttribute("content", content);
-        head.appendChild(tag);
-      };
-
-      meta("og:title", article.title);
-      meta("og:description", article.summary || article.content.replace(/<[^>]+>/g, '').slice(0, 100));
-      if (article.image) meta("og:image", location.origin + "/" + article.image);
-      meta("og:url", location.href);
-      meta("og:type", "article");
-
-      const twitter = document.createElement("meta");
-      twitter.setAttribute("name", "twitter:card");
-      twitter.setAttribute("content", "summary_large_image");
-      head.appendChild(twitter);
-    }
-  </script>
 </head>
 <body>
-  <div class="container">
-    <div id="article"></div>
-    <div class="back">
-      <a href="index.html">← 返回首页</a>
-    </div>
-  </div>
+  <header>
+    <h1>📰 OpenNews ON新闻网</h1>
+  </header>
+
+  <main>
+    <article class="article" id="article-detail">
+      <h2>加载中...</h2>
+    </article>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 OpenNews ON新闻网</p>
+  </footer>
 
   <script>
     const params = new URLSearchParams(window.location.search);
-    const id = parseInt(params.get("id"));
+    const articleId = params.get("id");
+    const container = document.getElementById("article-detail");
 
     fetch("articles.json")
       .then((res) => res.json())
       .then((data) => {
-        const article = data.find((a) => a.id === id);
+        const article = data.find(a => a.id == articleId);
         if (!article) {
-          document.getElementById("article").innerHTML = "<p>找不到这篇文章。</p>";
+          container.innerHTML = '<h2>文章不存在</h2>';
           return;
         }
-
-        setOGMetaTags(article);
-
         const html = `
-          <h1>${article.title}</h1>
-          <div class="meta">${article.date} ｜ 分类：${article.category}</div>
-          ${article.image ? `<img src="${article.image}" alt="">` : ""}
+          <h2>${article.title}</h2>
+          <p><strong>${article.date}</strong> | 分类：${article.category}</p>
+          ${article.image ? `<img src="${article.image}" style="max-width:100%; border-radius: 10px; margin: 1rem 0;">` : ''}
+          <p><strong>摘要：</strong>${article.summary}</p>
           <div>${article.content}</div>
         `;
+        container.innerHTML = html;
 
-        document.getElementById("article").innerHTML = html;
-      })
-      .catch((err) => {
-        document.getElementById("article").innerHTML = "<p>加载失败。</p>";
-        console.error(err);
+        // 动态更新 Open Graph meta
+        document.querySelector('meta[property="og:title"]').setAttribute("content", article.title);
+        document.querySelector('meta[property="og:description"]').setAttribute("content", article.summary);
+        if (article.image) document.querySelector('meta[property="og:image"]').setAttribute("content", article.image);
+        document.querySelector('meta[property="og:url"]').setAttribute("content", window.location.href);
       });
   </script>
 </body>
 </html>
+
