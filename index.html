@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ON新闻网 | OpenNews</title>
+  <link rel="stylesheet" href="style.css">
+  <script defer src="script.js"></script>
+</head>
+<body>
+  <header>
+    <h1>OpenNews | ON新闻网</h1>
+    <p>新闻、知识、趣闻、八卦、资讯杂货店</p>
+    <p>免费阅读，无需加入会员</p>
+  </header>
+
+  <div id="menu-container">
+    <button id="menu-toggle" onclick="toggleMenu()">☰ 菜单</button>
+  </div>
+
+  <nav id="nav-menu">
+    <a href="#" onclick="filterArticles('全部')">全部</a>
+    <a href="#" onclick="filterArticles('政治')">政治</a>
+    <a href="#" onclick="filterArticles('八卦')">八卦</a>
+    <a href="#" onclick="filterArticles('国际')">国际</a>
+    <a href="#" onclick="filterArticles('冷知识')">冷知识</a>
+    <a href="about.html">关于我们</a>
+    <a href="contact.html">联络我们</a>
+  </nav>
+
+  <section id="search">
+    <input type="text" id="searchInput" placeholder="输入关键词搜索...">
+    <button onclick="searchArticles()">搜索</button>
+  </section>
+
+  <section id="news-section">
+    <h2>新闻列表</h2>
+    <div id="news-list"></div>
+  </section>
+
+  <footer>
+    <p>&copy; 2025 OpenNews ON新闻网. All rights reserved.</p>
+  </footer>
+</body>
+</html>
