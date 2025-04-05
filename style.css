@@ -1,8 +1,8 @@
-/* style.css - 浅白黄背景风格 */
+/* style.css - 主页样式 */
 
 body {
-  font-family: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", "Helvetica Neue", sans-serif;
-  background-color: #fef9f1; /* 淡淡米黄色 */
+  font-family: "Noto Sans SC", sans-serif;
+  background-color: #fef9f1;
   color: rgb(46, 65, 86);
   margin: 0;
   padding: 0;
@@ -22,45 +22,17 @@ header h1 {
   white-space: nowrap;
 }
 
-header p {
-  font-size: 1rem;
-  margin-top: 0.5rem;
-  opacity: 0.9;
-}
-
-#menu-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 1rem;
-  background-color: white;
-  color: rgb(46, 65, 86);
-}
-
-#menu-toggle {
-  font-size: 1.1rem;
-  padding: 0.6rem 1.2rem;
-  border: none;
-  border-radius: 8px;
-  background-color: rgb(46, 65, 86);
-  color: white;
-}
-
 nav {
-  text-align: center;
-  padding: 0.5rem;
   background-color: rgb(46, 65, 86);
+  text-align: center;
+  padding: 1rem;
 }
 
 nav a {
   color: white;
   text-decoration: none;
-  margin: 0 10px;
+  margin: 0 1rem;
   font-weight: bold;
-}
-
-nav a:hover {
-  text-decoration: underline;
 }
 
 main {
@@ -69,8 +41,36 @@ main {
   margin: auto;
 }
 
-#news-section h2 {
+#search {
   text-align: center;
+  margin: 1rem 0;
+}
+
+#search input, #search button {
+  padding: 0.5rem;
+  border: none;
+  border-radius: 5px;
+}
+
+#search input {
+  width: 60%;
+  max-width: 300px;
+}
+
+#search button {
+  background-color: rgb(46, 65, 86);
+  color: white;
+  margin-left: 0.5rem;
+}
+
+#dateFilter {
+  display: block;
+  margin: 0 auto 1rem auto;
+  padding: 0.4rem 0.6rem;
+  border-radius: 6px;
+  border: none;
+  font-size: 1rem;
+  background: white;
   color: rgb(46, 65, 86);
 }
 
@@ -78,16 +78,15 @@ main {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 1rem;
-  padding: 1rem 0;
 }
 
 .article {
   background-color: white;
-  border-radius: 12px;
   padding: 1rem;
-  color: rgb(46, 65, 86);
+  border-radius: 12px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.1);
   transition: transform 0.2s;
+  color: rgb(46, 65, 86);
 }
 
 .article:hover {
@@ -101,97 +100,40 @@ main {
 }
 
 .article p em {
-  display: inline-block;
   background-color: rgb(46, 65, 86);
+  color: white;
   padding: 0.3rem 0.6rem;
   border-radius: 12px;
   font-size: 0.8rem;
   font-style: normal;
-  margin-top: 0.5rem;
-  color: white;
-}
-
-#search {
-  text-align: center;
-  margin: 1rem;
-}
-
-#search input {
-  padding: 0.5rem;
-  width: 60%;
-  max-width: 300px;
-  border-radius: 5px;
-  border: none;
-}
-
-#search button {
-  padding: 0.5rem 1rem;
-  margin-left: 0.5rem;
-  background-color: rgb(46, 65, 86);
-  color: white;
-  border: none;
-  border-radius: 5px;
 }
 
 footer {
   background-color: rgb(46, 65, 86);
+  color: white;
   text-align: center;
   padding: 1.5rem;
   font-size: 0.9rem;
   margin-top: 3rem;
-  color: white;
 }
 
 @media (max-width: 768px) {
   header h1 {
-    font-size: 1.3rem;
+    font-size: 1.4rem;
   }
 
-  nav {
-    display: none;
-  }
-
-  #menu-toggle {
-    display: block;
-    width: 100%;
-    font-size: 1.2rem;
-    background-color: white;
-    color: rgb(46, 65, 86);
-    padding: 1rem;
-    border: none;
-    font-weight: bold;
-  }
-
-  #nav-menu {
-    display: none;
-    text-align: center;
-    background-color: rgb(46, 65, 86);
-    padding: 1rem;
-  }
-
-  #nav-menu a {
+  nav a {
     display: block;
     margin: 0.5rem 0;
-    font-size: 1rem;
   }
 
-  #search input, #search button {
+  #search input {
     width: 90%;
-    margin: 0.3rem 0;
-    box-sizing: border-box;
   }
 
-  .article {
-    padding: 1rem;
+  #search button {
+    width: 90%;
+    margin-top: 0.3rem;
   }
 }
 
-#dateFilter {
-  padding: 0.4rem 0.6rem;
-  border-radius: 6px;
-  border: none;
-  font-size: 1rem;
-  margin-left: 0.3rem;
-  background: white;
-  color: rgb(46, 65, 86);
-}
