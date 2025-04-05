@@ -1,8 +1,6 @@
 // script.js
-
 let articlesData = [];
 
-// 加载 JSON 新闻
 fetch("articles.json")
   .then((res) => res.json())
   .then((data) => {
@@ -15,6 +13,8 @@ function renderArticles(articles) {
   const list = document.getElementById("news-list");
   list.innerHTML = "";
 
+  articles.sort((a, b) => b.id - a.id); // 最新优先
+
   articles.forEach((article) => {
     const card = document.createElement("div");
     card.className = "article";
@@ -24,12 +24,12 @@ function renderArticles(articles) {
     link.style.textDecoration = "none";
     link.style.color = "inherit";
 
-    let imgHtml = article.image ? `<img src='${article.image}' style='width: 100%; border-radius: 8px; margin-bottom: 0.5rem;'>` : "";
-    let summaryText = article.summary || "（无摘要内容）";
+    const imgHtml = article.image ? `<img src='${article.image}' alt='${article.title} 封面图'>` : "";
+    const summaryText = article.summary || "（无摘要内容）";
 
     card.innerHTML = `
       <h3>${article.title}</h3>
-      <p>${article.date}</p>
+      <p><strong>${article.date}</strong></p>
       ${imgHtml}
       <p>${summaryText}</p>
       <p><em>分类：${article.category}</em></p>
@@ -63,7 +63,7 @@ function populateDateFilter() {
   const dateSet = new Set(articlesData.map(a => a.date));
   const select = document.getElementById("dateFilter");
   dateSet.forEach(date => {
-const option = document.createElement("option");
+    const option = document.createElement("option");
     option.value = date;
     option.textContent = date;
     select.appendChild(option);
@@ -79,4 +79,5 @@ function filterByDate() {
     renderArticles(filtered);
   }
 }
+
 
