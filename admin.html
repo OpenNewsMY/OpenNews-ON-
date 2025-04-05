@@ -1,9 +1,10 @@
+<!-- admin.html 最新版本（支持图片上传、自动编号、静态页生成） -->
 <!DOCTYPE html>
 <html lang="zh-Hans">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>OpenNews 后台管理</title>
+  <title>OpenNews 发布文章</title>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC&display=swap" rel="stylesheet">
   <style>
     body {
@@ -49,42 +50,71 @@
       padding: 1rem;
       margin-top: 1rem;
     }
+    nav {
+      text-align: right;
+      margin-bottom: 1.5rem;
+    }
+    nav a {
+      text-decoration: none;
+      background: #28a745;
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 5px;
+    }
   </style>
 </head>
 <body>
-  <h1>📰 发布新文章</h1>
 
-  <label for="title">标题</label>
-  <input type="text" id="title">
+<script>
+  const password = "opennews2025";
+  if (sessionStorage.getItem("access") !== "granted") {
+    const input = prompt("请输入后台密码");
+    if (input !== password) {
+      alert("密码错误，无法进入后台");
+      window.location.href = "/";
+    } else {
+      sessionStorage.setItem("access", "granted");
+    }
+  }
+</script>
 
-  <label for="date">发布日期</label>
-  <input type="text" id="date" placeholder="如：2025年4月5日">
+<nav>
+  <a href="manage.html">📚 管理文章</a>
+</nav>
 
-  <label for="category">分类</label>
-  <select id="category">
-    <option>政治</option>
-    <option>本地新闻</option>
-    <option>国际</option>
-    <option>八卦</option>
-    <option>冷知识</option>
-    <option>废闻</option>
-  </select>
+<h1>📝 发布新文章</h1>
 
-  <label for="imageUpload">上传图片</label>
-  <input type="file" id="imageUpload" accept="image/*">
-  <p id="uploadStatus" style="font-size: 0.9rem; color: #777;"></p>
+<label>标题</label>
+<input type="text" id="title">
 
-  <label for="summary">摘要</label>
-  <textarea id="summary" rows="3"></textarea>
+<label>发布日期</label>
+<input type="text" id="date" placeholder="如：2025年4月6日">
 
-  <label for="content">文章内容</label>
-  <textarea id="content" rows="6"></textarea>
+<label>分类</label>
+<select id="category">
+  <option>政治</option>
+  <option>本地新闻</option>
+  <option>国际</option>
+  <option>八卦</option>
+  <option>冷知识</option>
+  <option>废闻</option>
+</select>
 
-  <button onclick="previewArticle()">预览文章</button>
-  <button onclick="submitArticle()">✅ 发布文章</button>
+<label>上传图片</label>
+<input type="file" id="imageUpload" accept="image/*">
+<p id="uploadStatus" style="font-size: 0.9rem; color: #777;"></p>
 
-  <div class="preview" id="preview"></div>
-  <pre id="output"></pre>
+<label>摘要</label>
+<textarea id="summary" rows="3"></textarea>
+
+<label>文章内容</label>
+<textarea id="content" rows="6"></textarea>
+
+<button onclick="previewArticle()">预览文章</button>
+<button onclick="submitArticle()">✅ 发布文章</button>
+
+<div class="preview" id="preview"></div>
+<pre id="output"></pre>
 
 <script>
 let uploadedImagePath = "";
@@ -108,14 +138,15 @@ function previewArticle() {
 }
 
 function submitArticle() {
+  const title = document.getElementById('title').value;
+  const date = document.getElementById('date').value;
+  const category = document.getElementById('category').value;
+  const summary = document.getElementById('summary').value;
+  const content = document.getElementById('content').value;
+
   const article = {
     id: Date.now(),
-    title: document.getElementById('title').value,
-    date: document.getElementById('date').value,
-    category: document.getElementById('category').value,
-    image: uploadedImagePath,
-    summary: document.getElementById('summary').value,
-    content: document.getElementById('content').value
+    title, date, category, image: uploadedImagePath, summary, content
   };
 
   document.getElementById("output").textContent = JSON.stringify(article, null, 2);
@@ -130,10 +161,10 @@ function submitArticle() {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(article)
-  }).then(() => alert("✅ 发布完成！可分享到 WhatsApp / Facebook 预览标题与图片！"));
+  }).then(() => alert("✅ 发布完成，已生成静态页面！"));
 }
 
-// 图片上传逻辑
+// 上传图片
 const uploader = document.getElementById('imageUpload');
 if (uploader) {
   uploader.addEventListener('change', async function (e) {
@@ -164,3 +195,4 @@ if (uploader) {
 </script>
 </body>
 </html>
+
