@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>OpenNews 管理文章</title>
+  <title>文章管理 - OpenNews</title>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC&display=swap" rel="stylesheet">
   <style>
     body {
@@ -52,6 +52,22 @@
       padding: 0.5rem 1rem;
       border-radius: 5px;
     }
+    .pagination {
+      text-align: center;
+      margin-top: 2rem;
+    }
+    .pagination button {
+      padding: 0.5rem 1rem;
+      margin: 0 0.3rem;
+      background-color: #ddd;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .pagination button.active {
+      background-color: #007bff;
+      color: white;
+    }
   </style>
 </head>
 <body>
@@ -75,13 +91,21 @@
 
 <h1>🗂️ 文章管理</h1>
 <div id="article-list"></div>
+<div class="pagination" id="pagination"></div>
 
 <script>
-function renderArticles(data) {
+let allArticles = [];
+let currentPage = 1;
+const perPage = 5;
+
+function renderArticles(page = 1) {
   const container = document.getElementById("article-list");
   container.innerHTML = "";
+  const start = (page - 1) * perPage;
+  const end = start + perPage;
+  const articles = allArticles.slice(start, end);
 
-  data.forEach(article => {
+  articles.forEach(article => {
     const box = document.createElement("div");
     box.className = "article-box";
 
@@ -95,6 +119,24 @@ function renderArticles(data) {
     `;
     container.appendChild(box);
   });
+
+  renderPagination();
+}
+
+function renderPagination() {
+  const pages = Math.ceil(allArticles.length / perPage);
+  const container = document.getElementById("pagination");
+  container.innerHTML = "";
+  for (let i = 1; i <= pages; i++) {
+    const btn = document.createElement("button");
+    btn.textContent = i;
+    if (i === currentPage) btn.classList.add("active");
+    btn.onclick = () => {
+      currentPage = i;
+      renderArticles(i);
+    };
+    container.appendChild(btn);
+  }
 }
 
 function editArticle(article) {
@@ -104,25 +146,26 @@ function editArticle(article) {
 
 function deleteArticle(id) {
   if (!confirm("确定要删除这篇文章吗？")) return;
-
   fetch("https://opennews-delete.opennews-my.workers.dev/", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ id })
-  })
-    .then(res => res.text())
+  }).then(res => res.text())
     .then(msg => {
       alert("✅ 删除成功");
       location.reload();
-    })
-    .catch(err => {
+    }).catch(err => {
       alert("❌ 删除失败：" + err);
     });
 }
 
 fetch("https://raw.githubusercontent.com/OpenNewsMy/OpenNews-ON-/main/articles.json")
   .then(res => res.json())
-  .then(renderArticles);
+  .then(data => {
+    allArticles = data.sort((a, b) => b.id - a.id);
+    renderArticles();
+  });
 </script>
 </body>
 </html>
+
