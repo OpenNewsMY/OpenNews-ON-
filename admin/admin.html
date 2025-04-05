@@ -107,7 +107,7 @@
 <textarea id="summary" rows="3"></textarea>
 
 <label for="content">文章内容</label>
-<textarea id="content" rows="6" placeholder="请使用 <p>段落</p> 包裹内容"></textarea>
+<textarea id="content" rows="6"></textarea>
 
 <button onclick="previewArticle()">预览文章</button>
 <button onclick="submitArticle()">📰 发布文章</button>
@@ -116,8 +116,25 @@
 <pre id="output"></pre>
 
 <script>
-let articleId = null;
 let uploadedImagePath = "";
+let isEditMode = false;
+let editingId = null;
+
+// 编辑模式检测
+const params = new URLSearchParams(location.search);
+const editId = params.get("edit");
+if (editId && localStorage.getItem("editArticle")) {
+  const article = JSON.parse(localStorage.getItem("editArticle"));
+  document.getElementById("title").value = article.title;
+  document.getElementById("date").value = article.date;
+  document.getElementById("category").value = article.category;
+  document.getElementById("summary").value = article.summary;
+  document.getElementById("content").value = article.content;
+  uploadedImagePath = article.image;
+  document.getElementById("uploadStatus").innerHTML = `✅ 使用现有图片：<code>${uploadedImagePath}</code>`;
+  isEditMode = true;
+  editingId = article.id;
+}
 
 function previewArticle() {
   const title = document.getElementById('title').value;
@@ -132,7 +149,7 @@ function previewArticle() {
     <p><strong>${date}</strong> | 分类：${category}</p>
     ${img}
     <p><strong>摘要：</strong>${summary}</p>
-    ${content}
+    <p>${content}</p>
   `;
   document.getElementById('preview').innerHTML = html;
 }
@@ -141,41 +158,38 @@ function submitArticle() {
   fetch("https://raw.githubusercontent.com/OpenNewsMy/OpenNews-ON-/main/articles.json")
     .then(res => res.json())
     .then(data => {
-      const latestId = data.length ? Math.max(...data.map(a => a.id)) : 100;
-      articleId = latestId + 1;
-      const title = document.getElementById('title').value;
-      const date = document.getElementById('date').value;
-      const category = document.getElementById('category').value;
-      const summary = document.getElementById('summary').value;
-      const content = document.getElementById('content').value;
-
+      const id = isEditMode ? editingId : (data.length ? Math.max(...data.map(a => a.id)) + 1 : 101);
       const article = {
-        id: articleId,
-        title,
-        date,
-        category,
+        id,
+        title: document.getElementById('title').value,
+        date: document.getElementById('date').value,
+        category: document.getElementById('category').value,
         image: uploadedImagePath,
-        summary,
-        content
+        summary: document.getElementById('summary').value,
+        content: document.getElementById('content').value
       };
 
       document.getElementById("output").textContent = JSON.stringify(article, null, 2);
 
-      Promise.all([
-        fetch("https://opennews-articles.opennews-my.workers.dev/", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(article)
-        }),
-        fetch("https://opennews-publish.opennews-my.workers.dev/", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(article)
-        })
-      ]).then(() => alert("✅ 发布完成！可分享到 WhatsApp / Facebook 预览标题与图片！"));
+      fetch("https://opennews-articles.opennews-my.workers.dev/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(article)
+      });
+
+      fetch("https://opennews-publish.opennews-my.workers.dev/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(article)
+      }).then(() => {
+        alert("✅ 发布完成！");
+        localStorage.removeItem("editArticle");
+        window.location.href = "/OpenNews-ON-/manage.html";
+      });
     });
 }
 
+// 图片上传逻辑
 const uploader = document.getElementById('imageUpload');
 if (uploader) {
   uploader.addEventListener('change', async function (e) {
@@ -204,6 +218,6 @@ if (uploader) {
   });
 }
 </script>
+
 </body>
 </html>
-
