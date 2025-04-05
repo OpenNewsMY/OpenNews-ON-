@@ -52,18 +52,14 @@
       padding: 0.5rem 1rem;
       border-radius: 5px;
     }
-    #pagination {
-      text-align: center;
-      margin-top: 2rem;
+    .filters {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
     }
-    #pagination button {
-      padding: 0.4rem 1rem;
-      margin: 0 5px;
-      border: none;
-      border-radius: 4px;
-      background-color: #007bff;
-      color: white;
-      cursor: pointer;
+    .filters input, .filters select {
+      padding: 0.5rem;
+      font-size: 1rem;
     }
   </style>
 </head>
@@ -87,25 +83,59 @@
 </nav>
 
 <h1>🗂️ 文章管理</h1>
+
+<div class="filters">
+  <input type="text" id="searchInput" placeholder="搜索标题或摘要...">
+  <select id="dateFilter"><option value="全部">按日期筛选</option></select>
+  <select id="categoryFilter">
+    <option value="全部">按分类筛选</option>
+    <option>政治</option>
+    <option>本地新闻</option>
+    <option>国际</option>
+    <option>八卦</option>
+    <option>冷知识</option>
+    <option>废闻</option>
+  </select>
+</div>
+
 <div id="article-list"></div>
 <div id="pagination"></div>
 
 <script>
+let allArticles = [];
 let currentPage = 1;
 const perPage = 5;
-let allArticles = [];
 
-function renderArticles(page = 1) {
+function applyFilters() {
+  const keyword = document.getElementById("searchInput").value.toLowerCase();
+  const selectedDate = document.getElementById("dateFilter").value;
+  const selectedCategory = document.getElementById("categoryFilter").value;
+
+  let filtered = allArticles.filter(a => {
+    return (
+      (a.title.toLowerCase().includes(keyword) || a.summary?.toLowerCase().includes(keyword)) &&
+      (selectedDate === "全部" || a.date === selectedDate) &&
+      (selectedCategory === "全部" || a.category === selectedCategory)
+    );
+  });
+
+  renderArticles(filtered);
+}
+
+function renderArticles(data) {
   const container = document.getElementById("article-list");
+  const pagination = document.getElementById("pagination");
   container.innerHTML = "";
+  pagination.innerHTML = "";
 
-  const start = (page - 1) * perPage;
+  const totalPages = Math.ceil(data.length / perPage);
+  const start = (currentPage - 1) * perPage;
   const end = start + perPage;
-  const pageArticles = allArticles.slice(start, end);
 
-  pageArticles.forEach(article => {
+  data.slice(start, end).forEach(article => {
     const box = document.createElement("div");
     box.className = "article-box";
+
     box.innerHTML = `
       <h3>${article.title}</h3>
       <p><strong>${article.date}</strong> | 分类：${article.category}</p>
@@ -117,20 +147,12 @@ function renderArticles(page = 1) {
     container.appendChild(box);
   });
 
-  renderPagination();
-}
-
-function renderPagination() {
-  const totalPages = Math.ceil(allArticles.length / perPage);
-  const pagination = document.getElementById("pagination");
-  pagination.innerHTML = "";
-
   for (let i = 1; i <= totalPages; i++) {
     const btn = document.createElement("button");
     btn.textContent = i;
     btn.onclick = () => {
       currentPage = i;
-      renderArticles(i);
+      renderArticles(data);
     };
     pagination.appendChild(btn);
   }
@@ -149,7 +171,7 @@ function deleteArticle(id) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ id })
   }).then(res => res.text())
-    .then(msg => {
+    .then(() => {
       alert("✅ 删除成功");
       location.reload();
     }).catch(err => {
@@ -160,12 +182,24 @@ function deleteArticle(id) {
 fetch("https://raw.githubusercontent.com/OpenNewsMy/OpenNews-ON-/main/articles.json")
   .then(res => res.json())
   .then(data => {
-    allArticles = data.sort((a, b) => b.id - a.id);
-    renderArticles();
+    allArticles = data;
+    const dateSet = new Set(data.map(a => a.date));
+    const dateSelect = document.getElementById("dateFilter");
+    dateSet.forEach(date => {
+      const option = document.createElement("option");
+      option.value = date;
+      option.textContent = date;
+      dateSelect.appendChild(option);
+    });
+    applyFilters();
   });
-</script>
 
+document.getElementById("searchInput").addEventListener("input", applyFilters);
+document.getElementById("dateFilter").addEventListener("change", applyFilters);
+document.getElementById("categoryFilter").addEventListener("change", applyFilters);
+</script>
 </body>
 </html>
+
 
 
