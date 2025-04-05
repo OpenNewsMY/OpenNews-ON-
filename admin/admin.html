@@ -6,60 +6,15 @@
   <title>OpenNews 后台管理</title>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC&display=swap" rel="stylesheet">
   <style>
-    body {
-      font-family: 'Noto Sans SC', sans-serif;
-      padding: 2rem;
-      background: #f9f9f9;
-      max-width: 900px;
-      margin: auto;
-    }
-    h1 {
-      color: #222;
-    }
-    label {
-      display: block;
-      margin-top: 1rem;
-      font-weight: bold;
-    }
-    input, textarea, select {
-      width: 100%;
-      padding: 0.5rem;
-      margin-top: 0.5rem;
-      box-sizing: border-box;
-    }
-    button {
-      margin-top: 1rem;
-      padding: 0.7rem 1.5rem;
-      background-color: #007bff;
-      color: white;
-      border: none;
-      cursor: pointer;
-      border-radius: 5px;
-    }
-    pre {
-      background: #eee;
-      padding: 1rem;
-      white-space: pre-wrap;
-      word-wrap: break-word;
-      margin-top: 2rem;
-    }
-    .preview {
-      background: #fff;
-      border: 1px solid #ccc;
-      padding: 1rem;
-      margin-top: 1rem;
-    }
-    nav {
-      text-align: right;
-      margin-bottom: 1.5rem;
-    }
-    nav a {
-      text-decoration: none;
-      background: #28a745;
-      color: white;
-      padding: 0.5rem 1rem;
-      border-radius: 5px;
-    }
+    body { font-family: 'Noto Sans SC', sans-serif; padding: 2rem; background: #f9f9f9; max-width: 900px; margin: auto; }
+    h1 { color: #222; }
+    label { display: block; margin-top: 1rem; font-weight: bold; }
+    input, textarea, select { width: 100%; padding: 0.5rem; margin-top: 0.5rem; box-sizing: border-box; }
+    button { margin-top: 1rem; padding: 0.7rem 1.5rem; background-color: #007bff; color: white; border: none; cursor: pointer; border-radius: 5px; }
+    pre { background: #eee; padding: 1rem; white-space: pre-wrap; word-wrap: break-word; margin-top: 2rem; }
+    .preview { background: #fff; border: 1px solid #ccc; padding: 1rem; margin-top: 1rem; }
+    nav { text-align: right; margin-bottom: 1.5rem; }
+    nav a { text-decoration: none; background: #28a745; color: white; padding: 0.5rem 1rem; border-radius: 5px; }
   </style>
 </head>
 <body>
@@ -81,7 +36,7 @@
   <a href="/OpenNews-ON-/manage.html">📚 管理文章</a>
 </nav>
 
-<h1>🔒 OpenNews 后台管理工具</h1>
+<h1>📰 发布新文章</h1>
 
 <label for="title">标题</label>
 <input type="text" id="title">
@@ -99,7 +54,7 @@
   <option>废闻</option>
 </select>
 
-<label for="imageUpload">上传图片</label>
+<label for="imageUpload">上传封面图</label>
 <input type="file" id="imageUpload" accept="image/*">
 <p id="uploadStatus" style="font-size: 0.9rem; color: #777;"></p>
 
@@ -110,31 +65,13 @@
 <textarea id="content" rows="6"></textarea>
 
 <button onclick="previewArticle()">预览文章</button>
-<button onclick="submitArticle()">📰 发布文章</button>
+<button onclick="submitArticle()">✅ 发布文章</button>
 
 <div class="preview" id="preview"></div>
 <pre id="output"></pre>
 
 <script>
 let uploadedImagePath = "";
-let isEditMode = false;
-let editingId = null;
-
-// 编辑模式检测
-const params = new URLSearchParams(location.search);
-const editId = params.get("edit");
-if (editId && localStorage.getItem("editArticle")) {
-  const article = JSON.parse(localStorage.getItem("editArticle"));
-  document.getElementById("title").value = article.title;
-  document.getElementById("date").value = article.date;
-  document.getElementById("category").value = article.category;
-  document.getElementById("summary").value = article.summary;
-  document.getElementById("content").value = article.content;
-  uploadedImagePath = article.image;
-  document.getElementById("uploadStatus").innerHTML = `✅ 使用现有图片：<code>${uploadedImagePath}</code>`;
-  isEditMode = true;
-  editingId = article.id;
-}
 
 function previewArticle() {
   const title = document.getElementById('title').value;
@@ -144,79 +81,65 @@ function previewArticle() {
   const content = document.getElementById('content').value;
   const img = uploadedImagePath ? `<img src="${uploadedImagePath}" style="max-width:100%;"><br><br>` : "";
 
-  const html = `
+  document.getElementById('preview').innerHTML = `
     <h3>${title}</h3>
     <p><strong>${date}</strong> | 分类：${category}</p>
     ${img}
     <p><strong>摘要：</strong>${summary}</p>
-    <p>${content}</p>
+    <p>${content.replace(/\n/g, '<br>')}</p>
   `;
-  document.getElementById('preview').innerHTML = html;
 }
 
-function submitArticle() {
-  fetch("https://raw.githubusercontent.com/OpenNewsMy/OpenNews-ON-/main/articles.json")
-    .then(res => res.json())
-    .then(data => {
-      const id = isEditMode ? editingId : (data.length ? Math.max(...data.map(a => a.id)) + 1 : 101);
-      const article = {
-        id,
-        title: document.getElementById('title').value,
-        date: document.getElementById('date').value,
-        category: document.getElementById('category').value,
-        image: uploadedImagePath,
-        summary: document.getElementById('summary').value,
-        content: document.getElementById('content').value
-      };
+async function submitArticle() {
+  const id = Date.now();
+  const title = document.getElementById('title').value;
+  const date = document.getElementById('date').value;
+  const category = document.getElementById('category').value;
+  const summary = document.getElementById('summary').value;
+  const content = document.getElementById('content').value;
 
-      document.getElementById("output").textContent = JSON.stringify(article, null, 2);
+  const article = { id, title, date, category, image: uploadedImagePath, summary, content };
+  document.getElementById("output").textContent = JSON.stringify(article, null, 2);
 
-      fetch("https://opennews-articles.opennews-my.workers.dev/", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(article)
-      });
-
-      fetch("https://opennews-publish.opennews-my.workers.dev/", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(article)
-      }).then(() => {
-        alert("✅ 发布完成！");
-        localStorage.removeItem("editArticle");
-        window.location.href = "/OpenNews-ON-/manage.html";
-      });
-    });
-}
-
-// 图片上传逻辑
-const uploader = document.getElementById('imageUpload');
-if (uploader) {
-  uploader.addEventListener('change', async function (e) {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = async function (event) {
-      const base64 = event.target.result.split(',')[1];
-      const res = await fetch("https://opennews-uploader.opennews-my.workers.dev/", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ filename: file.name, content: base64 })
-      });
-
-      if (res.ok) {
-        const data = await res.json();
-        uploadedImagePath = data.url;
-        document.getElementById("uploadStatus").innerHTML = `✅ 上传成功：<code>${uploadedImagePath}</code>`;
-      } else {
-        const err = await res.text();
-        document.getElementById("uploadStatus").innerHTML = `❌ 上传失败：${err}`;
-      }
-    };
-    reader.readAsDataURL(file);
+  await fetch("https://opennews-articles.opennews-my.workers.dev/", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(article)
   });
+
+  await fetch("https://opennews-publish.opennews-my.workers.dev/", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(article)
+  });
+
+  alert("✅ 发布完成，可分享到 WhatsApp / FB！");
+  location.reload();
 }
+
+// 上传图片逻辑
+const uploader = document.getElementById('imageUpload');
+uploader.addEventListener('change', async function (e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = async function (event) {
+    const base64 = event.target.result.split(',')[1];
+    const res = await fetch("https://opennews-uploader.opennews-my.workers.dev/", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ filename: file.name, content: base64 })
+    });
+    const result = await res.json();
+    if (result.url) {
+      uploadedImagePath = result.url;
+      document.getElementById("uploadStatus").innerHTML = `✅ 上传成功：<code>${uploadedImagePath}</code>`;
+    } else {
+      document.getElementById("uploadStatus").innerHTML = "❌ 上传失败";
+    }
+  };
+  reader.readAsDataURL(file);
+});
 </script>
 
 </body>
