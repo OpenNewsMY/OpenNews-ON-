@@ -107,7 +107,7 @@
 <textarea id="summary" rows="3"></textarea>
 
 <label for="content">文章内容</label>
-<textarea id="content" rows="6"></textarea>
+<textarea id="content" rows="6" placeholder="请使用 <p>段落</p> 包裹内容"></textarea>
 
 <button onclick="previewArticle()">预览文章</button>
 <button onclick="submitArticle()">📰 发布文章</button>
@@ -132,7 +132,7 @@ function previewArticle() {
     <p><strong>${date}</strong> | 分类：${category}</p>
     ${img}
     <p><strong>摘要：</strong>${summary}</p>
-    <p>${content}</p>
+    ${content}
   `;
   document.getElementById('preview').innerHTML = html;
 }
@@ -176,7 +176,6 @@ function submitArticle() {
     });
 }
 
-// 图片上传逻辑
 const uploader = document.getElementById('imageUpload');
 if (uploader) {
   uploader.addEventListener('change', async function (e) {
@@ -207,3 +206,4 @@ if (uploader) {
 </script>
 </body>
 </html>
+
