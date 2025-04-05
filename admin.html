@@ -36,13 +36,6 @@
       cursor: pointer;
       border-radius: 5px;
     }
-    pre {
-      background: #eee;
-      padding: 1rem;
-      white-space: pre-wrap;
-      word-wrap: break-word;
-      margin-top: 2rem;
-    }
     .preview {
       background: #fff;
       border: 1px solid #ccc;
@@ -140,7 +133,7 @@ function submitArticle() {
   fetch("https://raw.githubusercontent.com/OpenNewsMy/OpenNews-ON-/main/articles.json")
     .then(res => res.json())
     .then(data => {
-      const id = Date.now();
+      const articleId = Date.now();
       const title = document.getElementById('title').value;
       const date = document.getElementById('date').value;
       const category = document.getElementById('category').value;
@@ -148,7 +141,13 @@ function submitArticle() {
       const content = document.getElementById('content').value;
 
       const article = {
-        id, title, date, category, image: uploadedImagePath, summary, content
+        id: articleId,
+        title,
+        date,
+        category,
+        image: uploadedImagePath,
+        summary,
+        content
       };
 
       document.getElementById("output").textContent = JSON.stringify(article, null, 2);
@@ -163,11 +162,11 @@ function submitArticle() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(article)
-      }).then(() => alert("✅ 发布完成！可分享到 WhatsApp / Facebook 预览标题与图片！"));
+      }).then(() => alert("✅ 发布完成！请分享文章链接测试 OG 标签预览！"));
     });
 }
 
-// 图片上传
+// 上传图片逻辑
 const uploader = document.getElementById('imageUpload');
 if (uploader) {
   uploader.addEventListener('change', async function (e) {
@@ -198,3 +197,4 @@ if (uploader) {
 </script>
 </body>
 </html>
+
