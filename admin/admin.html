@@ -161,22 +161,22 @@ function submitArticle() {
 
       document.getElementById("output").textContent = JSON.stringify(article, null, 2);
 
-      fetch("https://opennews-articles.opennews-my.workers.dev/", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(article)
-      });
-
-      fetch("https://opennews-publish.opennews-my.workers.dev/", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(article)
-      }).then(() => alert("✅ 发布完成！可分享到 WhatsApp / Facebook 预览标题与图片！"));
+      Promise.all([
+        fetch("https://opennews-articles.opennews-my.workers.dev/", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(article)
+        }),
+        fetch("https://opennews-publish.opennews-my.workers.dev/", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(article)
+        })
+      ]).then(() => alert("✅ 发布完成！可分享到 WhatsApp / Facebook 预览标题与图片！"));
     });
 }
 
-// 图片上传
-
+// 图片上传逻辑
 const uploader = document.getElementById('imageUpload');
 if (uploader) {
   uploader.addEventListener('change', async function (e) {
