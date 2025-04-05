@@ -13,9 +13,7 @@
       max-width: 900px;
       margin: auto;
     }
-    h1 {
-      color: #222;
-    }
+    h1 { color: #222; }
     label {
       display: block;
       margin-top: 1rem;
@@ -87,7 +85,7 @@
 <input type="text" id="title">
 
 <label for="date">发布日期</label>
-<input type="text" id="date" placeholder="如：2025年4月5日">
+<input type="text" id="date" placeholder="如：2025年4月6日">
 
 <label for="category">分类</label>
 <select id="category">
@@ -166,6 +164,11 @@ function previewArticle() {
 }
 
 function submitArticle() {
+  if (!uploadedImagePath) {
+    alert("⚠️ 请先上传封面图片后再发布！");
+    return;
+  }
+
   fetch("https://raw.githubusercontent.com/OpenNewsMy/OpenNews-ON-/main/articles.json")
     .then(res => res.json())
     .then(data => {
@@ -203,6 +206,7 @@ function submitArticle() {
     });
 }
 </script>
+
 </body>
 </html>
 
