@@ -20,7 +20,7 @@ function renderArticles(articles) {
     card.className = "article";
 
     const link = document.createElement("a");
-    link.href = `article.html?id=${article.id}`;
+    link.href = `articles/${article.id}.html`;
     link.style.textDecoration = "none";
     link.style.color = "inherit";
 
