@@ -1,3 +1,5 @@
+// script.js - 包含新闻列表渲染、筛选、搜索、菜单展开等功能
+
 let articlesData = [];
 
 // 加载 JSON 新闻
@@ -9,7 +11,6 @@ fetch("articles.json")
     populateDateFilter();
   });
 
-// 渲染文章卡片
 function renderArticles(articles) {
   const list = document.getElementById("news-list");
   list.innerHTML = "";
@@ -19,13 +20,11 @@ function renderArticles(articles) {
     card.className = "article";
 
     const link = document.createElement("a");
-    link.href = `articles/${article.id}.html`; // ✅ 修复链接
+    link.href = `article.html?id=${article.id}`;
     link.style.textDecoration = "none";
     link.style.color = "inherit";
 
-    let imgHtml = article.image
-      ? `<img src='${article.image}' style='width: 100%; border-radius: 8px; margin-bottom: 0.5rem;'>`
-      : "";
+    let imgHtml = article.image ? `<img src='${article.image}' style='width: 100%; border-radius: 8px; margin-bottom: 0.5rem;'>` : "";
     let summaryText = article.summary || "（无摘要内容）";
 
     card.innerHTML = `
@@ -41,7 +40,6 @@ function renderArticles(articles) {
   });
 }
 
-// 分类筛选
 function filterArticles(category) {
   if (category === "全部") {
     renderArticles(articlesData);
@@ -51,7 +49,6 @@ function filterArticles(category) {
   }
 }
 
-// 关键词搜索
 function searchArticles() {
   const keyword = document.getElementById("searchInput").value.toLowerCase();
   const results = articlesData.filter((a) =>
@@ -62,7 +59,6 @@ function searchArticles() {
   renderArticles(results);
 }
 
-// 日期筛选下拉选项
 function populateDateFilter() {
   const dateSet = new Set(articlesData.map(a => a.date));
   const select = document.getElementById("dateFilter");
@@ -74,7 +70,6 @@ function populateDateFilter() {
   });
 }
 
-// 日期筛选
 function filterByDate() {
   const selectedDate = document.getElementById("dateFilter").value;
   if (selectedDate === "全部") {
@@ -83,4 +78,13 @@ function filterByDate() {
     const filtered = articlesData.filter((a) => a.date === selectedDate);
     renderArticles(filtered);
   }
+}
+
+// ✅ 菜单展开收起功能
+const toggleBtn = document.getElementById("menu-toggle");
+if (toggleBtn) {
+  toggleBtn.onclick = function () {
+    const nav = document.getElementById("nav-menu");
+    nav.style.display = nav.style.display === "block" ? "none" : "block";
+  };
 }
