@@ -1,31 +1,38 @@
-let articlesData = [];
+// script.js
 
-// 加载 JSON 新闻
+let articlesData = [];
+const articlesPerPage = 6;
+let currentPage = 1;
+
 fetch("articles.json")
   .then((res) => res.json())
   .then((data) => {
     articlesData = data;
-    renderArticles(articlesData);
+    renderArticles();
     populateDateFilter();
   });
 
-// 渲染文章卡片
-function renderArticles(articles) {
+function renderArticles() {
   const list = document.getElementById("news-list");
+  const pagination = document.getElementById("pagination");
+  if (!list || !pagination) return;
+
   list.innerHTML = "";
 
-  articles.forEach((article) => {
+  const startIndex = (currentPage - 1) * articlesPerPage;
+  const endIndex = startIndex + articlesPerPage;
+  const paginated = articlesData.slice(startIndex, endIndex);
+
+  paginated.forEach((article) => {
     const card = document.createElement("div");
     card.className = "article";
 
     const link = document.createElement("a");
-    link.href = `articles/${article.id}.html`; // ✅ 修复链接
+    link.href = `articles/${article.id}.html`; // ✅ 修复为正确的静态路径
     link.style.textDecoration = "none";
     link.style.color = "inherit";
 
-    let imgHtml = article.image
-      ? `<img src='${article.image}' style='width: 100%; border-radius: 8px; margin-bottom: 0.5rem;'>`
-      : "";
+    let imgHtml = article.image ? `<img src='${article.image}' style='width: 100%; border-radius: 8px; margin-bottom: 0.5rem;'>` : "";
     let summaryText = article.summary || "（无摘要内容）";
 
     card.innerHTML = `
@@ -39,34 +46,72 @@ function renderArticles(articles) {
     link.appendChild(card);
     list.appendChild(link);
   });
+
+  renderPagination();
 }
 
-// 分类筛选
-function filterArticles(category) {
-  if (category === "全部") {
-    renderArticles(articlesData);
-  } else {
-    const filtered = articlesData.filter((a) => a.category === category);
-    renderArticles(filtered);
+function renderPagination() {
+  const totalPages = Math.ceil(articlesData.length / articlesPerPage);
+  const pagination = document.getElementById("pagination");
+  if (!pagination) return;
+
+  pagination.innerHTML = "";
+
+  for (let i = 1; i <= totalPages; i++) {
+    const btn = document.createElement("button");
+    btn.textContent = i;
+    btn.onclick = () => {
+      currentPage = i;
+      renderArticles();
+    };
+    if (i === currentPage) {
+      btn.style.fontWeight = "bold";
+    }
+    pagination.appendChild(btn);
   }
 }
 
-// 关键词搜索
-function searchArticles() {
-  const keyword = document.getElementById("searchInput").value.toLowerCase();
-  const results = articlesData.filter((a) =>
-    a.title.toLowerCase().includes(keyword) ||
-    (a.summary && a.summary.toLowerCase().includes(keyword)) ||
-    (a.content && a.content.toLowerCase().includes(keyword))
-  );
-  renderArticles(results);
+function filterArticles(category) {
+  if (category === "全部") {
+    fetch("articles.json")
+      .then((res) => res.json())
+      .then((data) => {
+        articlesData = data;
+        currentPage = 1;
+        renderArticles();
+      });
+  } else {
+    fetch("articles.json")
+      .then((res) => res.json())
+      .then((data) => {
+        articlesData = data.filter((a) => a.category === category);
+        currentPage = 1;
+        renderArticles();
+      });
+  }
 }
 
-// 日期筛选下拉选项
+function searchArticles() {
+  const keyword = document.getElementById("searchInput").value.toLowerCase();
+  fetch("articles.json")
+    .then((res) => res.json())
+    .then((data) => {
+      articlesData = data.filter((a) =>
+        a.title.toLowerCase().includes(keyword) ||
+        (a.summary && a.summary.toLowerCase().includes(keyword)) ||
+        (a.content && a.content.toLowerCase().includes(keyword))
+      );
+      currentPage = 1;
+      renderArticles();
+    });
+}
+
 function populateDateFilter() {
-  const dateSet = new Set(articlesData.map(a => a.date));
   const select = document.getElementById("dateFilter");
-  dateSet.forEach(date => {
+  if (!select) return;
+
+  const dateSet = new Set(articlesData.map((a) => a.date));
+  dateSet.forEach((date) => {
     const option = document.createElement("option");
     option.value = date;
     option.textContent = date;
@@ -74,13 +119,23 @@ function populateDateFilter() {
   });
 }
 
-// 日期筛选
 function filterByDate() {
   const selectedDate = document.getElementById("dateFilter").value;
   if (selectedDate === "全部") {
-    renderArticles(articlesData);
+    fetch("articles.json")
+      .then((res) => res.json())
+      .then((data) => {
+        articlesData = data;
+        currentPage = 1;
+        renderArticles();
+      });
   } else {
-    const filtered = articlesData.filter((a) => a.date === selectedDate);
-    renderArticles(filtered);
+    fetch("articles.json")
+      .then((res) => res.json())
+      .then((data) => {
+        articlesData = data.filter((a) => a.date === selectedDate);
+        currentPage = 1;
+        renderArticles();
+      });
   }
 }
