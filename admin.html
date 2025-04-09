@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>OpenNews 发布新文章</title>
+  <title>OpenNews 发布 / 编辑文章</title>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC&display=swap" rel="stylesheet">
   <style>
     body {
@@ -79,7 +79,7 @@
   <a href="/OpenNews-ON-/manage.html">📚 管理文章</a>
 </nav>
 
-<h1>📝 发布新文章</h1>
+<h1 id="pageTitle">📝 发布新文章</h1>
 
 <label for="title">标题</label>
 <input type="text" id="title">
@@ -116,6 +116,34 @@
 <script>
 let articleId = null;
 let uploadedImagePath = "";
+
+// 从 URL 中获取参数（如 ?edit=123）
+function getQueryParam(param) {
+  const urlParams = new URLSearchParams(window.location.search);
+  return urlParams.get(param);
+}
+
+const editId = getQueryParam("edit");
+if (editId) {
+  document.getElementById("pageTitle").textContent = "✏️ 编辑文章";
+  fetch("https://raw.githubusercontent.com/OpenNewsMy/OpenNews-ON-/main/articles.json")
+    .then(res => res.json())
+    .then(data => {
+      const article = data.find(a => a.id == editId);
+      if (!article) {
+        alert("⚠️ 找不到指定的文章 ID");
+        return;
+      }
+      document.getElementById('title').value = article.title;
+      document.getElementById('date').value = article.date;
+      document.getElementById('category').value = article.category;
+      document.getElementById('summary').value = article.summary;
+      document.getElementById('content').value = article.content;
+      uploadedImagePath = article.image;
+      document.getElementById("uploadStatus").innerHTML = `✅ 原图：<code>${uploadedImagePath}</code>`;
+      articleId = article.id;
+    });
+}
 
 const uploader = document.getElementById('imageUpload');
 if (uploader) {
@@ -172,8 +200,11 @@ function submitArticle() {
   fetch("https://raw.githubusercontent.com/OpenNewsMy/OpenNews-ON-/main/articles.json")
     .then(res => res.json())
     .then(data => {
-      const latestId = data.length ? Math.max(...data.map(a => a.id)) : 100;
-      articleId = latestId + 1;
+      if (!articleId) {
+        const latestId = data.length ? Math.max(...data.map(a => a.id)) : 100;
+        articleId = latestId + 1;
+      }
+
       const title = document.getElementById('title').value;
       const date = document.getElementById('date').value;
       const category = document.getElementById('category').value;
@@ -202,7 +233,7 @@ function submitArticle() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(article)
-      }).then(() => alert("✅ 发布完成！可分享到 WhatsApp / Facebook 预览标题与图片！"));
+      }).then(() => alert("✅ 发布完成！文章已保存并生成页面！"));
     });
 }
 </script>
