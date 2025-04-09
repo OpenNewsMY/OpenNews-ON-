@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+  <title>OpenNews SEO 工具</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: sans-serif;
+      max-width: 800px;
+      margin: 2rem auto;
+      padding: 1rem;
+      background: #f9f9f9;
+    }
+    h1 { font-size: 1.5rem; }
+    button {
+      margin: 0.5rem 0;
+      padding: 0.5rem 1rem;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover { background-color: #0056b3; }
+    pre {
+      background: #eee;
+      padding: 1rem;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      max-height: 300px;
+      overflow: auto;
+    }
+  </style>
+</head>
+<body>
+  <h1>🔧 OpenNews SEO 工具</h1>
+
+  <button onclick="loadSitemap()">查看 sitemap.xml</button>
+  <pre id="sitemapContent">点击按钮以加载 sitemap.xml 内容...</pre>
+
+  <button onclick="loadRobots()">查看 robots.txt</button>
+  <pre id="robotsContent">点击按钮以加载 robots.txt 内容...</pre>
+
+  <button onclick="pingGoogle()">📡 手动 Ping Google 通知 sitemap</button>
+  <p id="pingStatus"></p>
+
+  <script>
+    async function loadSitemap() {
+      const res = await fetch("https://opennewsmy.github.io/OpenNews-ON-/sitemap.xml");
+      const text = await res.text();
+      document.getElementById("sitemapContent").textContent = text;
+    }
+
+    async function loadRobots() {
+      const res = await fetch("https://opennewsmy.github.io/OpenNews-ON-/robots.txt");
+      const text = await res.text();
+      document.getElementById("robotsContent").textContent = text;
+    }
+
+    async function pingGoogle() {
+      const url = "https://www.google.com/ping?sitemap=https://opennewsmy.github.io/OpenNews-ON-/sitemap.xml";
+      const res = await fetch(url);
+      if (res.ok) {
+        document.getElementById("pingStatus").textContent = "✅ 已通知 Google 抓取 sitemap.xml";
+      } else {
+        document.getElementById("pingStatus").textContent = "❌ Ping 失败：" + res.status;
+      }
+    }
+  </script>
+</body>
+</html>
