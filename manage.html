@@ -9,128 +9,89 @@
     body {
       font-family: 'Noto Sans SC', sans-serif;
       padding: 2rem;
-      background: #f4f4f4;
+      background: #f9f9f9;
       max-width: 900px;
       margin: auto;
     }
-    h1 {
-      color: #333;
+    h1 { color: #222; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
     }
-    .article-box {
-      background: white;
-      border-radius: 10px;
-      padding: 1rem;
-      margin-bottom: 1rem;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    th, td {
+      padding: 0.75rem;
+      border-bottom: 1px solid #ccc;
+      text-align: left;
     }
-    .article-box h3 {
-      margin-top: 0;
-    }
-    .actions button {
-      margin-right: 10px;
-      padding: 0.4rem 1rem;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    .edit-btn {
-      background-color: #007bff;
+    th { background: #eee; }
+    a.button {
+      background: #007bff;
       color: white;
-    }
-    .delete-btn {
-      background-color: #dc3545;
-      color: white;
-    }
-    nav {
-      text-align: right;
-      margin-bottom: 1.5rem;
-    }
-    nav a {
+      padding: 0.3rem 0.7rem;
       text-decoration: none;
-      background: #28a745;
-      color: white;
-      padding: 0.5rem 1rem;
-      border-radius: 5px;
+      border-radius: 4px;
+      margin-right: 0.5rem;
+    }
+    a.button.delete {
+      background: #dc3545;
     }
   </style>
 </head>
 <body>
 
-<script>
-  const password = "opennews2025";
-  if (sessionStorage.getItem("access") !== "granted") {
-    const input = prompt("请输入后台密码");
-    if (input !== password) {
-      alert("密码错误，无法进入后台");
-      window.location.href = "/";
-    } else {
-      sessionStorage.setItem("access", "granted");
-    }
-  }
-</script>
-
-<nav>
-  <a href="/OpenNews-ON-/admin.html">📝 发布新文章</a>
-</nav>
-
-<h1>🗂️ 文章管理</h1>
-<div id="article-list"></div>
+<h1>📚 管理文章</h1>
+<table>
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>标题</th>
+      <th>分类</th>
+      <th>操作</th>
+    </tr>
+  </thead>
+  <tbody id="articleTable"></tbody>
+</table>
 
 <script>
-function renderArticles(data) {
-  const container = document.getElementById("article-list");
-  container.innerHTML = "";
-
-  data.forEach(article => {
-    const box = document.createElement("div");
-    box.className = "article-box";
-
-    box.innerHTML = `
-      <h3>${article.title}</h3>
-      <p><strong>${article.date}</strong> | 分类：${article.category}</p>
-      <div class="actions">
-        <button class="edit-btn" onclick='editArticle(${JSON.stringify(article)})'>✏️ 编辑</button>
-        <button class="delete-btn" onclick='deleteArticle(${article.id})'>🗑️ 删除</button>
-      </div>
-    `;
-    container.appendChild(box);
+fetch("https://raw.githubusercontent.com/OpenNewsMy/OpenNews-ON-/main/articles.json")
+  .then(res => res.json())
+  .then(data => {
+    const table = document.getElementById("articleTable");
+    data.sort((a, b) => b.id - a.id).forEach(article => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${article.id}</td>
+        <td>${article.title}</td>
+        <td>${article.category}</td>
+        <td>
+          <a href="/OpenNews-ON-/admin.html?edit=${article.id}" class="button">编辑</a>
+          <a href="#" class="button delete" onclick="deleteArticle(${article.id})">删除</a>
+        </td>
+      `;
+      table.appendChild(tr);
+    });
   });
-}
-
-function editArticle(article) {
-  localStorage.setItem("editArticle", JSON.stringify(article));
-  location.href = "/OpenNews-ON-/admin.html?edit=" + article.id;
-}
 
 function deleteArticle(id) {
   if (!confirm("确定要删除这篇文章吗？")) return;
-
   fetch("https://opennews-delete.opennews-my.workers.dev/", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ id })
   })
-    .then(async res => {
-      const text = await res.text();
-      if (!res.ok) throw new Error(text);
-      alert("✅ 删除成功");
+    .then(res => res.text())
+    .then(res => {
+      alert("✅ 删除成功！");
       location.reload();
     })
-    .catch(err => {
-      alert("❌ 删除失败：" + err.message);
-    });
+    .catch(err => alert("❌ 删除失败：" + err));
 }
-
-// 加载文章列表
-fetch("https://raw.githubusercontent.com/OpenNewsMy/OpenNews-ON-/main/articles.json")
-  .then(res => res.json())
-  .then(renderArticles)
-  .catch(err => {
-    alert("❌ 加载失败：" + err.message);
-  });
 </script>
+
 </body>
 </html>
+
 
 
 
